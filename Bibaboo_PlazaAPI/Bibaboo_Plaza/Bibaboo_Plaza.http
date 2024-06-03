@@ -1,0 +1,6 @@
+@Bibaboo_Plaza_HostAddress = http://localhost:5037
+
+GET {{Bibaboo_Plaza_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
