@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
-    [Table("product")]
+    [Table("Product")]
     public class Product : BaseEntity
     {
         [Column("product_name")]
@@ -37,10 +37,12 @@ namespace BPA.Domain.Entities
 
         [Column("type_id")]
         [ForeignKey("type")]
+        public Guid TypeId { get; set; }
         public virtual ProductType Type { get; set; }
 
         [Column("brand_id")]
         [ForeignKey("brand")]
+        public Guid BrandId { get; set; }
         public virtual Brand Brand { get; set; }
     }
 }

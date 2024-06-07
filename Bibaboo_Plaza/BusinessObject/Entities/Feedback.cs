@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
+    [Table("Feedback")]
     public class Feedback : BaseEntity
     {
         [Column("content")]
@@ -17,10 +18,12 @@ namespace BPA.Domain.Entities
 
         [Column("account_id")]
         [ForeignKey("account")]
+        public Guid AccountId { get; set; }
         public virtual Account Account { get; set; }
 
         [Column("product_id")]
         [ForeignKey("product")]
+        public Guid ProductId { get; set; }
         public virtual Product Product { get; set; }
     }
 }

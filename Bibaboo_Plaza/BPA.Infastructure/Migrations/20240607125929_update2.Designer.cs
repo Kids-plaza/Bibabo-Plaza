@@ -4,6 +4,7 @@ using BPA.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BPA.Infastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240607125929_update2")]
+    partial class update2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("BPA")
+                .HasDefaultSchema("bpa")
                 .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -100,7 +103,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Account", "BPA");
+                    b.ToTable("Account", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Brand", b =>
@@ -157,7 +160,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand", "BPA");
+                    b.ToTable("Brand", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
@@ -206,7 +209,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Feedback", "BPA");
+                    b.ToTable("Feedback", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
@@ -252,7 +255,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Order", "BPA");
+                    b.ToTable("Order", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
@@ -307,7 +310,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("order");
 
-                    b.ToTable("OrderDetail", "BPA");
+                    b.ToTable("OrderDetail", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
@@ -355,7 +358,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Post", "BPA");
+                    b.ToTable("Post", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
@@ -427,7 +430,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Product", "BPA");
+                    b.ToTable("Product", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
@@ -469,7 +472,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Type", "BPA");
+                    b.ToTable("Type", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
@@ -512,7 +515,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Report", "BPA");
+                    b.ToTable("Report", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>

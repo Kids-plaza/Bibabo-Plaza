@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
-        [Table("brand")]
+        [Table("Brand")]
         public class Brand : BaseEntity
         {
             [Column("brand_name")]
@@ -29,11 +29,7 @@ namespace BPA.Domain.Entities
             public string Description { get; set; } = string.Empty;
 
             [Column("image_url")]
-            [StringLength(500)]
             public string ImageUrl { get; set; } = string.Empty;
-
-            [Column("product_id")]
-            [ForeignKey("product")]
-            public ICollection<Product> Products { get; set; }
+            public virtual Product Product { get; set; }
     }
 }

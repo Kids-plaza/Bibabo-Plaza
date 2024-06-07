@@ -4,6 +4,7 @@ using BPA.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BPA.Infastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240607125222_update")]
+    partial class update
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("BPA")
+                .HasDefaultSchema("bpa")
                 .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -100,7 +103,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Account", "BPA");
+                    b.ToTable("account", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Brand", b =>
@@ -140,7 +143,8 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
                         .HasColumnName("image_url");
 
                     b.Property<bool>("IsDeleted")
@@ -157,7 +161,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brand", "BPA");
+                    b.ToTable("brand", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
@@ -206,7 +210,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Feedback", "BPA");
+                    b.ToTable("Feedbacks", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
@@ -252,7 +256,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Order", "BPA");
+                    b.ToTable("Order", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
@@ -307,7 +311,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("order");
 
-                    b.ToTable("OrderDetail", "BPA");
+                    b.ToTable("OrderDetails", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
@@ -355,7 +359,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Post", "BPA");
+                    b.ToTable("post", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
@@ -427,7 +431,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Product", "BPA");
+                    b.ToTable("product", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
@@ -469,7 +473,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Type", "BPA");
+                    b.ToTable("type", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
@@ -485,8 +489,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("content");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
@@ -512,7 +515,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Report", "BPA");
+                    b.ToTable("Reports", "bpa");
                 });
 
             modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>

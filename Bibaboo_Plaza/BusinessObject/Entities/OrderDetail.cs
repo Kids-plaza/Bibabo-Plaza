@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
+    [Table("OrderDetail")]
     public class OrderDetail : BaseEntity
     {
         [Column("quantity")]
@@ -29,6 +30,7 @@ namespace BPA.Domain.Entities
 
         [Column("product_id")]
         [ForeignKey("product")]
+        public Guid ProductId { get; set; }
         public virtual Product product { get; set; }
     }
 }

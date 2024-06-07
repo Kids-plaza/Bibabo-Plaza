@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
-    [Table("account")]
+    [Table("Account")]
     public class Account : BaseEntity
     {
         [Column("username")]

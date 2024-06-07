@@ -23,6 +23,7 @@ namespace BPA.Domain.Entities
 
         [Column("account_id")]
         [ForeignKey("account")]
+        public Guid AccountId { get; set; }
         public virtual Account Account { get; set; } 
     }
 }

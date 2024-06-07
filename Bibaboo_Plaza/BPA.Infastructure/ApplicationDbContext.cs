@@ -33,14 +33,14 @@ namespace BPA.Infrastructure
         #endregion DbSet
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(local);Database=BibabooBD;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=(local);Database=BibabooPlazaBD;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-            modelBuilder.HasDefaultSchema("bpa");
+            modelBuilder.HasDefaultSchema("BPA");
 
         }
 

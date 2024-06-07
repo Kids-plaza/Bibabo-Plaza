@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BPA.Domain.Entities
 {
-    [Table("type")]
+    [Table("Type")]
     public class ProductType : BaseEntity
     {
         [Column("type_name")]
@@ -20,8 +20,6 @@ namespace BPA.Domain.Entities
         [Required]
         public string Description { get; set; } = string.Empty;
 
-        [Column("product_id")]
-        [ForeignKey("product")]
         public ICollection<Product> Products { get; set; }
     }
 }
