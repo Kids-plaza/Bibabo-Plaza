@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bibaboo_PlazaAPI", "Bibaboo_Plaza\Bibaboo_PlazaAPI.csproj", "{0D07A31C-4F43-4F35-AE57-0DFBF75BF950}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPA.API", "BPA.API\BPA.API.csproj", "{35AEF41A-F4A5-440F-A8A3-45921EB638FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPA.Domain", "BusinessObject\BPA.Domain.csproj", "{3F7DE2BF-6D44-41F7-894F-BB8BF4B332FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPA.BusinessObject", "BPA.BusinessObject\BPA.BusinessObject.csproj", "{C84DF879-7AFE-4E37-AEA2-2CBEBEA09F34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPA.Infastructure", "BPA.Infastructure\BPA.Infastructure.csproj", "{AF0278DD-FF0C-4F6E-9576-B25AEB0318C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BPA.DAO", "BPA.DAO\BPA.DAO.csproj", "{6F0F995D-7D07-4066-A9A0-735111A7F7BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0D07A31C-4F43-4F35-AE57-0DFBF75BF950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D07A31C-4F43-4F35-AE57-0DFBF75BF950}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D07A31C-4F43-4F35-AE57-0DFBF75BF950}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D07A31C-4F43-4F35-AE57-0DFBF75BF950}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F7DE2BF-6D44-41F7-894F-BB8BF4B332FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F7DE2BF-6D44-41F7-894F-BB8BF4B332FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F7DE2BF-6D44-41F7-894F-BB8BF4B332FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F7DE2BF-6D44-41F7-894F-BB8BF4B332FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AF0278DD-FF0C-4F6E-9576-B25AEB0318C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AF0278DD-FF0C-4F6E-9576-B25AEB0318C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AF0278DD-FF0C-4F6E-9576-B25AEB0318C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AF0278DD-FF0C-4F6E-9576-B25AEB0318C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35AEF41A-F4A5-440F-A8A3-45921EB638FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35AEF41A-F4A5-440F-A8A3-45921EB638FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35AEF41A-F4A5-440F-A8A3-45921EB638FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35AEF41A-F4A5-440F-A8A3-45921EB638FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C84DF879-7AFE-4E37-AEA2-2CBEBEA09F34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C84DF879-7AFE-4E37-AEA2-2CBEBEA09F34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C84DF879-7AFE-4E37-AEA2-2CBEBEA09F34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C84DF879-7AFE-4E37-AEA2-2CBEBEA09F34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F0F995D-7D07-4066-A9A0-735111A7F7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F0F995D-7D07-4066-A9A0-735111A7F7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F0F995D-7D07-4066-A9A0-735111A7F7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F0F995D-7D07-4066-A9A0-735111A7F7BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

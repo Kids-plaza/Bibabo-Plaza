@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BusinessObject\BPA.Domain.csproj" />
+    <ProjectReference Include="..\BPA.BusinessObject\BPA.BusinessObject.csproj" />
   </ItemGroup>
 
 </Project>
