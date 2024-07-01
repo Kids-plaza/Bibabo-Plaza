@@ -1,5 +1,5 @@
-﻿using BPA.Domain.Common;
-using BPA.Domain.Enums;
+﻿using BPA.BusinessObject.Common;
+using BPA.BusinessObject.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.Domain.Entities
+namespace BPA.BusinessObject.Entities
 {
     [Table("Product")]
     public class Product : BaseEntity
@@ -33,16 +33,14 @@ namespace BPA.Domain.Entities
 
         [Column("status")]
         [EnumDataType(typeof(ProductStatus))]
-        public ProductStatus Status { get; set; } = ProductStatus.OutOfStock;
-
-        [Column("type_id")]
-        [ForeignKey("type")]
-        public Guid TypeId { get; set; }
-        public virtual ProductType Type { get; set; }
+        public ProductStatus Status { get; set; } = ProductStatus.ComingSoon;
 
         [Column("brand_id")]
         [ForeignKey("brand")]
         public Guid BrandId { get; set; }
         public virtual Brand Brand { get; set; }
+
+        [InverseProperty("Product")]
+        public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 }

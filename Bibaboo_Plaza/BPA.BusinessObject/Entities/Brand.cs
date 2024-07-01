@@ -1,4 +1,4 @@
-﻿using BPA.Domain.Common;
+﻿using BPA.BusinessObject.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.Domain.Entities
+namespace BPA.BusinessObject.Entities
 {
         [Table("Brand")]
         public class Brand : BaseEntity
@@ -22,14 +22,11 @@ namespace BPA.Domain.Entities
 
             [Column("brand_phone")]
             [Required]
+            [Phone]
             public string BrandPhone { get; set; } = string.Empty;
 
             [Column("description")]
             [Required]
             public string Description { get; set; } = string.Empty;
-
-            [Column("image_url")]
-            public string ImageUrl { get; set; } = string.Empty;
-            public virtual Product Product { get; set; }
     }
 }

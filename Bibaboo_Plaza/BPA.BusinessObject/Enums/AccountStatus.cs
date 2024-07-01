@@ -1,4 +1,4 @@
-﻿namespace BPA.Domain.Enums
+﻿namespace BPA.BusinessObject.Enums
 {
     public enum AccountStatus
     {

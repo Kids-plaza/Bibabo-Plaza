@@ -1,5 +1,5 @@
-﻿using BPA.Domain.Common;
-using BPA.Domain.Enums;
+﻿using BPA.BusinessObject.Common;
+using BPA.BusinessObject.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,14 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.Domain.Entities
+namespace BPA.BusinessObject.Entities
 {
     [Table("Account")]
     public class Account : BaseEntity
     {
-        [Column("username")]
+        [Column("email")]
         [Required]
-        public string Username { get; set; } = string.Empty;
+        [StringLength(255)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
         [Column("password")]
         public string Password { get; set; } = string.Empty;
@@ -24,22 +26,14 @@ namespace BPA.Domain.Entities
         [StringLength(500)]
         public string FullName { get; set; } = string.Empty;
 
-        [Column("email")]
-        [Required]
-        [StringLength(255)]
-        public string Email { get; set; } = string.Empty;
-
         [Column("phone_number")]
         [StringLength(20)]
+        [Phone]
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Column("address")]
         [StringLength(500)]
         public string Address { get; set; } = string.Empty;
-
-        [Column("image_url")]
-        [StringLength(500)]
-        public string ImageUrl { get; set; } = string.Empty;
 
         [Column("status")]
         [EnumDataType(typeof(AccountStatus))]
@@ -48,5 +42,11 @@ namespace BPA.Domain.Entities
         [Column("role")]
         [EnumDataType(typeof(RoleType))]
         public RoleType Role { get; set; } = RoleType.Customer;
+
+        [InverseProperty("Staff")]
+        public virtual ICollection<Post> StaffPosts{ get; set; } = new List<Post>();
+
+        [InverseProperty("Customer")]
+        public ICollection<Order> CustomerOrders { get; set; } = new List<Order>();
     }
 }
