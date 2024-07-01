@@ -1,4 +1,4 @@
-﻿using BPA.Domain.Common;
+﻿using BPA.BusinessObject.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.Domain.Entities
+namespace BPA.BusinessObject.Entities
 {
     [Table("Report")]
     public class Report : BaseEntity
@@ -16,9 +16,9 @@ namespace BPA.Domain.Entities
         [Required]
         public string Content { get; set; } = string.Empty;
 
-        [Column("account_id")]
-        [ForeignKey("account")]
-        public Guid AccountId { get; set; }
-        public virtual Account Account { get; set; }
+        [Column("staff_id")]
+        [ForeignKey("Staff")]
+        public Guid StaffId { get; set; }
+        public virtual Account Staff { get; set; } = null!;
     }
 }

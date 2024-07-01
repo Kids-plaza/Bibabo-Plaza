@@ -1,4 +1,4 @@
-﻿using BPA.Domain.Common;
+﻿using BPA.BusinessObject.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.Domain.Entities
+namespace BPA.BusinessObject.Entities
 {
     [Table("OrderDetail")]
     public class OrderDetail : BaseEntity
