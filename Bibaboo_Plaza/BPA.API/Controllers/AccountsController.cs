@@ -4,20 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
-using BPA.DAO.Context;
 using BPA.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
-using BPA.Repository.Repositories;
 using BPA.BusinessObject.Dtos.Account;
 using BPA.BusinessObject.Enums;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using BPA.BusinessObject.Account;
-using Azure.Core;
 
 namespace BPA.API.Controllers
 {
@@ -101,7 +96,6 @@ namespace BPA.API.Controllers
             }
         }
 
-        //[EnableQuery(PageSize = 10)]
         [HttpGet("GetAll")]
         [Authorize(Roles = "Admin")]
         public IActionResult GetAllAccounts()
@@ -130,7 +124,7 @@ namespace BPA.API.Controllers
                 var account = _accountService.GetById(id);
                 if (account == null)
                 {
-                    return NotFound("Cannot Find Account");
+                    return NotFound("Cannot Find Id");
                 }
                 return Ok(account);
             }

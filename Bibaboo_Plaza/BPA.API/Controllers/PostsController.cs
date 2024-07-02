@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +16,85 @@ namespace BPA.API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
 
-        // GET: api/Posts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+        [AllowAnonymous]
+        public IActionResult GetAllPosts()
         {
-            return await _context.Posts.ToListAsync();
-        }
-
-        // GET: api/Posts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(Guid id)
-        {
-            var post = await _context.Posts.FindAsync(id);
-
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return post;
-        }
-
-        // PUT: api/Posts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPost(Guid id, Post post)
-        {
-            if (id != post.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(post).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var list = _postService.GetAll().ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!PostExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
-        // POST: api/Posts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
+        [HttpGet("GetById")]
+        [Authorize(Roles = "Staff")]
+        public IActionResult GetPostById(Guid id)
         {
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
+            try
+            {
+                var account = _postService.GetById(id);
+                if (account == null)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(account);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/Posts/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePost(Guid id)
+        [HttpPost("Create")]
+        [Authorize(Roles = "Staff")]
+        public IActionResult CreateFeedback(Post request)
         {
-            var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                _postService.Add(request);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> DeleteFeedback(Guid id)
+        {
+            var feedback = _postService.GetById(id);
+            if (feedback == null)
             {
                 return NotFound();
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
+            _postService.Delete(feedback);
 
-            return NoContent();
-        }
-
-        private bool PostExists(Guid id)
-        {
-            return _context.Posts.Any(e => e.Id == id);
+            return Ok("Delete Successfully");
         }
     }
 }

@@ -18,10 +18,5 @@ namespace BPA.BusinessObject.Entities
         [Column("content")]
         [Required]
         public string Content { get; set; } = string.Empty;
-
-        [Column("staff_id")]
-        [ForeignKey("Staff")]
-        public Guid StaffId { get; set; }
-        public virtual Account Staff { get; set; } = null!;
     }
 }

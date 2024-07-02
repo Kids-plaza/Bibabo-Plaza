@@ -11,9 +11,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+//builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+//builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
+//builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+//builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
 //builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddControllers();
 

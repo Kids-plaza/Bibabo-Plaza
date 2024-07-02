@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +16,85 @@ namespace BPA.API.Controllers
     [ApiController]
     public class ReportsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IReportService _reportService;
 
-        public ReportsController(ApplicationDbContext context)
+        public ReportsController(IReportService reportService)
         {
-            _context = context;
+            _reportService = reportService;
         }
 
-        // GET: api/Reports
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Report>>> GetReports()
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllReports()
         {
-            return await _context.Reports.ToListAsync();
-        }
-
-        // GET: api/Reports/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Report>> GetReport(Guid id)
-        {
-            var report = await _context.Reports.FindAsync(id);
-
-            if (report == null)
-            {
-                return NotFound();
-            }
-
-            return report;
-        }
-
-        // PUT: api/Reports/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReport(Guid id, Report report)
-        {
-            if (id != report.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(report).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var list = _reportService.GetAll().ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!ReportExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
-        // POST: api/Reports
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Report>> PostReport(Report report)
+        [HttpGet("GetById")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetReportById(Guid id)
         {
-            _context.Reports.Add(report);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReport", new { id = report.Id }, report);
+            try
+            {
+                var account = _reportService.GetById(id);
+                if (account == null)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(account);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/Reports/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReport(Guid id)
+        [HttpPost("Create")]
+        [AllowAnonymous]
+        public IActionResult CreateReport(Report request)
         {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null)
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                _reportService.Add(request);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteReport(Guid id)
+        {
+            var feedback = _reportService.GetById(id);
+            if (feedback == null)
             {
                 return NotFound();
             }
 
-            _context.Reports.Remove(report);
-            await _context.SaveChangesAsync();
+            _reportService.Delete(feedback);
 
-            return NoContent();
-        }
-
-        private bool ReportExists(Guid id)
-        {
-            return _context.Reports.Any(e => e.Id == id);
+            return Ok("Delete Successfully");
         }
     }
 }

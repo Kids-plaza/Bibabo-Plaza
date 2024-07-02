@@ -1,7 +1,6 @@
-﻿using BPA.BusinessObject.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace BPA.BusinessObject.Account
+namespace BPA.BusinessObject.Dtos.Account
 {
     public class UpdateAccountRequest
     {

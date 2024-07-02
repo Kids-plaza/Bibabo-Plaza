@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
-using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +14,83 @@ namespace BPA.API.Controllers
     [ApiController]
     public class FeedbacksController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public FeedbacksController(ApplicationDbContext context)
+        private readonly IFeedbackService _feedbackService;
+        public FeedbacksController(IFeedbackService feedbackService)
         {
-            _context = context;
+            _feedbackService = feedbackService;
         }
 
-        // GET: api/Feedbacks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Feedback>>> GetFeedbacks()
+        [Authorize(Roles = "Staff")]
+        public IActionResult GetAllFeedbacks()
         {
-            return await _context.Feedbacks.ToListAsync();
-        }
-
-        // GET: api/Feedbacks/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Feedback>> GetFeedback(Guid id)
-        {
-            var feedback = await _context.Feedbacks.FindAsync(id);
-
-            if (feedback == null)
-            {
-                return NotFound();
-            }
-
-            return feedback;
-        }
-
-        // PUT: api/Feedbacks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFeedback(Guid id, Feedback feedback)
-        {
-            if (id != feedback.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(feedback).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var list = _feedbackService.GetAll().ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!FeedbackExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
+        }       
 
-            return NoContent();
+        [HttpGet("GetById")]
+        [Authorize(Roles = "Staff")]
+        public IActionResult GetFeedbackById(Guid id)
+        {
+            try
+            {
+                var account = _feedbackService.GetById(id);
+                if (account == null)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(account);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/Feedbacks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Feedback>> PostFeedback(Feedback feedback)
+        [HttpPost("Create")]
+        [Authorize(Roles = "Customer")]
+        public IActionResult CreateFeedback(Feedback request)
         {
-            _context.Feedbacks.Add(feedback);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                _feedbackService.Add(request);
 
-            return CreatedAtAction("GetFeedback", new { id = feedback.Id }, feedback);
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/Feedbacks/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFeedback(Guid id)
+        [HttpDelete]
+        [Authorize(Roles = "Staff")]
+        public IActionResult DeleteFeedback(Guid id)
         {
-            var feedback = await _context.Feedbacks.FindAsync(id);
+            var feedback = _feedbackService.GetById( id);
             if (feedback == null)
             {
                 return NotFound();
             }
 
-            _context.Feedbacks.Remove(feedback);
-            await _context.SaveChangesAsync();
+            _feedbackService.Delete(feedback);
 
-            return NoContent();
-        }
-
-        private bool FeedbackExists(Guid id)
-        {
-            return _context.Feedbacks.Any(e => e.Id == id);
+            return Ok("Delete Successfully");
         }
     }
 }

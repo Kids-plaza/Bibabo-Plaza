@@ -1,7 +1,7 @@
 ﻿using BPA.BusinessObject.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace BPA.BusinessObject.Account
+namespace BPA.BusinessObject.Dtos.Account
 {
     public class CreateAccountRequest
     {
