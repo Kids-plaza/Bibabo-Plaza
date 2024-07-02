@@ -5,7 +5,7 @@ namespace BPA.Service.IServices
 {
     public interface IAccountService
     {
-        Account? GetAccountByEmailAndPassword(AccountLoginDto accountLoginDto);
+        Account? GetAccountByEmailAndPassword(LoginRequest accountLoginDto);
         IEnumerable<Account> SearchByName(string name);
         IEnumerable<Account> GetAll();
         Account? GetById(Guid id);

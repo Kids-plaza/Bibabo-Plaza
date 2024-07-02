@@ -23,12 +23,12 @@ namespace BPA.Service.Services
             _accountRepository.Delete(account);
         }
 
-        public Account? GetAccountByEmailAndPassword(AccountLoginDto accountLoginDto)
+        public Account? GetAccountByEmailAndPassword(LoginRequest accountLogin)
         {
             try
             {
                 return _accountRepository.GetAll()
-                    .FirstOrDefault(x => x.Email!.Equals(accountLoginDto.Email) && x.Password!.Equals(accountLoginDto.Password));
+                    .FirstOrDefault(x => x.Email!.Equals(accountLogin.Email) && x.Password!.Equals(accountLogin.Password));
             }
             catch (Exception)
             {
