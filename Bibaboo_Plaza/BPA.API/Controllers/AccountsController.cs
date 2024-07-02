@@ -7,6 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
+using BPA.Repository.Repositories;
+using BPA.BusinessObject.Dtos.Account;
+using BPA.BusinessObject.Enums;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using BPA.BusinessObject.Account;
+using Azure.Core;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +25,335 @@ namespace BPA.API.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public AccountsController(ApplicationDbContext context)
+        private readonly IAccountService _accountService;
+        private readonly IConfiguration _config;
+        public AccountsController(IAccountService accountService, IConfiguration config)
         {
-            _context = context;
+            _accountService = accountService;
+            _config = config;
+
         }
 
-        // GET: api/Accounts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        [HttpPost("SignIn")]
+        [AllowAnonymous]
+        public IActionResult SignIn(LoginRequest request)
         {
-            return await _context.Accounts.ToListAsync();
-        }
-
-        // GET: api/Accounts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(Guid id)
-        {
-            var account = await _context.Accounts.FindAsync(id);
-
-            if (account == null)
-            {
-                return NotFound();
-            }
-
-            return account;
-        }
-
-        // PUT: api/Accounts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccount(Guid id, Account account)
-        {
-            if (id != account.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(account).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var account = _accountService.GetAccountByEmailAndPassword(request);
+                if (account == null)
+                {
+                    return Unauthorized("Invalid Username Or Password");
+                }
+                if (account.Status == AccountStatus.Banned)
+                {
+                    return Unauthorized("Your Account is Inactived");
+                }
+                var jwt = GenerateJWT(account);
+                return Ok(jwt);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!AccountExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(ex.Message);
             }
-
-            return NoContent();
         }
 
-        // POST: api/Accounts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(Account account)
+        [HttpPost("SignUp")]
+        [AllowAnonymous]
+        public IActionResult SignUp(SignUpRequest request)
         {
-            _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                if (!request.Password!.Equals(request.ConfirmPassword))
+                {
+                    return BadRequest("Confirm password do not match password");
+                }
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email));
+                if (listByEmail.Any())
+                {
+                    return BadRequest("Account With Email " + request.Email + " Already Exist");
+                }
 
-            return CreatedAtAction("GetAccount", new { id = account.Id }, account);
+                var newAccount = new Account
+                {
+                    Email = request.Email,
+                    Password = request.Password,
+                    FullName = request.FullName,
+                    PhoneNumber = request.PhoneNumber,
+                    Address = request.Address,
+                    Role = RoleType.Customer,
+                    Status = AccountStatus.Active,
+                };
+                _accountService.Add(newAccount);
+                return Ok("Sign Up Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/Accounts/5
+        //[EnableQuery(PageSize = 10)]
+        [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllAccounts()
+        {
+            try
+            {
+                var list = _accountService.GetAll().ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAccountById(Guid id)
+        {
+            try
+            {
+                var account = _accountService.GetById(id);
+                if (account == null)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+                return Ok(account);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Search")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult SearchAccountByEmailOrName(string input)
+        {
+            try
+            {
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
+                var listByName = _accountService.GetAll().Where(x => x.FullName!.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
+                IList<Account> list = new List<Account>();
+                if (!listByEmail.Any() && !listByName.Any())
+                {
+                    return NotFound("Cannot Find Account");
+                }
+                else if (listByEmail.Any())
+                {
+                    list = listByEmail;
+                }
+                else if (listByName.Any())
+                {
+                    list = listByName;
+                }
+                else 
+                {
+                    list = _accountService.GetAll().ToList();
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("CreateAccount")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult CreateAccount(CreateAccountRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email));
+                if (listByEmail.Any())
+                {
+                    return BadRequest("Account With Email " + request.Email + " Already Exist");
+                }
+
+                var newAccount = new Account
+                {
+                    Email = request.Email,
+                    Password = request.Password,
+                    FullName = request.FullName,
+                    PhoneNumber = request.PhoneNumber,
+                    Address = request.Address,
+                    Role = request.Role,
+                    Status = AccountStatus.Active,
+                };
+                _accountService.Add(newAccount);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("SelfUpdate/{id}")]
+        public IActionResult UpdateAccount([FromRoute] Guid id, UpdateAccountRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundAccount = _accountService.GetById(id);
+                if (foundAccount == null)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email!.Equals(request.Email));
+
+                if (request.Email != null && !request.Email.Equals(foundAccount.Email))
+                {
+                    if (existingAccountByEmail != null)
+                        return BadRequest("Email Is Already Used");
+                    foundAccount.Email = request.Email;
+                }
+                foundAccount.FullName = request.FullName ?? foundAccount.FullName;
+                foundAccount.Address = request.Address ?? foundAccount.Address;
+                foundAccount.Password = request.Password ?? foundAccount.Password;
+                foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
+
+                _accountService.Update(foundAccount);
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("AdminUpdate/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateAccountWithRoleAdmin([FromRoute] Guid id, AdminUpdateRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundAccount = _accountService.GetById(id);
+                if (foundAccount == null)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email == request.Email);
+                if (request.Email != null && !request.Email.Equals(foundAccount.Email))
+                {
+                    if (existingAccountByEmail != null)
+                        return BadRequest("Email Is Already Used");
+                    foundAccount.Email = request.Email;
+                }
+                foundAccount.FullName = request.FullName ?? foundAccount.FullName;
+                foundAccount.Address = request.Address ?? foundAccount.Address;
+                foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
+                foundAccount.Role = request.Role;
+                foundAccount.IsDeleted = request.IsDeleted;
+                _accountService.Update(foundAccount);
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("ChangeStatus/{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult ChangeStatus([FromRoute] Guid id)
+        {
+            try
+            {
+                var foundAccount = _accountService.GetById(id);
+                if (foundAccount == null)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+                if (foundAccount.Role == RoleType.Admin)
+                {
+                    return BadRequest("User With Admin Role Cannot Be Inactived");
+                }
+                switch (foundAccount.Status)
+                {
+                    case AccountStatus.Active:
+                        foundAccount.Status = AccountStatus.Banned;
+                        break;
+                    case AccountStatus.Banned:
+                        foundAccount.Status = AccountStatus.Active;
+                        break;
+                    default:
+                        foundAccount.Status = AccountStatus.Active;
+                        break;
+                }
+                _accountService.Update(foundAccount);
+
+                return Ok("Change Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAccount(Guid id)
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteAccount([FromRoute] Guid id)
         {
-            var account = await _context.Accounts.FindAsync(id);
+            var account = _accountService.GetById(id);
             if (account == null)
             {
-                return NotFound();
+                return NotFound("Cannot Find Account");
             }
 
-            _context.Accounts.Remove(account);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            _accountService.Delete(account);
+            return Ok("Delete Successfully");
         }
 
-        private bool AccountExists(Guid id)
+        private string GenerateJWT(Account account)
         {
-            return _context.Accounts.Any(e => e.Id == id);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+              _config["Jwt:Audience"],
+              new Claim[]
+              {
+                  new(ClaimTypes.Email, account.Email),
+                  new(ClaimTypes.Role, account.Role.ToString()),
+                  new("Id", account.Id.ToString()),
+              },
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials
+              );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
