@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using BPA.Service.Services;
+using Microsoft.AspNetCore.Authorization;
+using BPA.BusinessObject.Dtos.Account;
+using BPA.BusinessObject.Enums;
+using BPA.BusinessObject.Dtos.Brand;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +21,174 @@ namespace BPA.API.Controllers
     [ApiController]
     public class BrandsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public BrandsController(ApplicationDbContext context)
+        private readonly IBrandService _brandService;
+        private readonly IProductService _productService;
+        public BrandsController(IBrandService brandService, IProductService productService)
         {
-            _context = context;
+            _brandService = brandService;
+            _productService = productService;
         }
 
-        // GET: api/Brands
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Brand>>> GetBrands()
+        [HttpGet("GetAll")]
+        [AllowAnonymous]
+        public IActionResult GetAllBrands()
         {
-            return await _context.Brands.ToListAsync();
-        }
-
-        // GET: api/Brands/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Brand>> GetBrand(Guid id)
-        {
-            var brand = await _context.Brands.FindAsync(id);
-
-            if (brand == null)
-            {
-                return NotFound();
-            }
-
-            return brand;
-        }
-
-        // PUT: api/Brands/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBrand(Guid id, Brand brand)
-        {
-            if (id != brand.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(brand).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BrandExists(id))
+                var list = _brandService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult GetBrandById(Guid id)
+        {
+            try
+            {
+                var brand = _brandService.GetById(id);
+                if (brand == null || brand.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(brand);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Search")]
+        [AllowAnonymous]
+        public IActionResult SearchBrandByName(string input)
+        {
+            try
+            {
+                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                IList<Brand> list = new List<Brand>();
+                if (!!listByName.Any())
+                {
+                    return NotFound("Cannot Find Brand");
+                }
+                else if (listByName.Any())
+                {
+                    list = listByName;
                 }
                 else
                 {
-                    throw;
+                    list = _brandService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Brands
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Brand>> PostBrand(Brand brand)
-        {
-            _context.Brands.Add(brand);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetBrand", new { id = brand.Id }, brand);
-        }
-
-        // DELETE: api/Brands/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBrand(Guid id)
-        {
-            var brand = await _context.Brands.FindAsync(id);
-            if (brand == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Brands.Remove(brand);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool BrandExists(Guid id)
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult CreateBrand(BrandRequest request)
         {
-            return _context.Brands.Any(e => e.Id == id);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Equals(request.BrandName) && x.IsDeleted == false);
+                if (listByName.Any())
+                {
+                    return BadRequest("Account With Email " + request.BrandName + " Already Exist");
+                }
+
+                var newBrand = new Brand
+                {
+                    BrandName = request.BrandName,
+                    BrandAddress = request.BrandAddress,
+                    BrandPhone = request.BrandPhone,
+                    Description = request.Description,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _brandService.Add(newBrand);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-    }
+
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult UpdateBrand([FromRoute] Guid id, BrandRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundBrand = _brandService.GetById(id);
+                if (foundBrand == null || foundBrand.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Brand");
+                }
+
+                var existingBrandByName = _brandService.GetAll().FirstOrDefault(x => x.BrandName == request.BrandName && x.IsDeleted == false);
+                if (request.BrandName != null && !request.BrandName.Equals(foundBrand.BrandName))
+                {
+                    if (existingBrandByName != null)
+                        return BadRequest("Name Is Already Used");
+                    foundBrand.BrandName = request.BrandName;
+                }
+                foundBrand.Description = request.Description ?? foundBrand.Description;
+                foundBrand.BrandAddress = request.BrandAddress ?? foundBrand.BrandAddress;
+                foundBrand.BrandPhone = request.BrandPhone ?? foundBrand.BrandPhone;
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult DeleteBrand([FromRoute] Guid id)
+        {
+            try
+            {
+                var foundBrand = _brandService.GetById(id);
+                var hasProduct = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false);
+                if (foundBrand == null || foundBrand.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Brand");
+                }
+                if (hasProduct.IsNullOrEmpty())
+                {
+                    foundBrand.IsDeleted = true;
+                    _brandService.Update(foundBrand);
+                    return Ok("Delete Successfully");
+                }
+                return BadRequest("Cannot Delete Brand");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }   
 }

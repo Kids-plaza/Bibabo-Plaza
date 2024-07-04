@@ -19,5 +19,7 @@ namespace BPA.Repository.Repositories
 
         public Feedback? GetById(Guid id) => FeedbackDAO.Instance.GetById(id);
 
+        public void Update(Feedback feedback) => FeedbackDAO.Instance.Update(feedback);
+
     }
 }

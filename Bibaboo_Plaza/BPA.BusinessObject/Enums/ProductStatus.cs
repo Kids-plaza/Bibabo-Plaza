@@ -3,7 +3,6 @@
     public enum ProductStatus
     {
         InStock,
-        OutOfStock,
-        ComingSoon
+        OutOfStock
     }
 }

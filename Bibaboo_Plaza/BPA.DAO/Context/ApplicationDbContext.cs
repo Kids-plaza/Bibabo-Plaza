@@ -26,14 +26,13 @@ namespace BPA.DAO.Context
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductType> Types { get; set; }
         public DbSet<Report> Reports { get; set; }
 
 
         #endregion DbSet
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(local);Database=BibabooPlazaBD;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=(local);Database=BPAdb;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

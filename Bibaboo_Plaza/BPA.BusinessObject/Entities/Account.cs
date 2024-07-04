@@ -14,25 +14,18 @@ namespace BPA.BusinessObject.Entities
     public class Account : BaseEntity
     {
         [Column("email")]
-        [Required]
-        [StringLength(255)]
-        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Column("password")]
         public string Password { get; set; } = string.Empty;
 
         [Column("fullname")]
-        [StringLength(500)]
         public string FullName { get; set; } = string.Empty;
 
         [Column("phone_number")]
-        [StringLength(20)]
-        [Phone]
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Column("address")]
-        [StringLength(500)]
         public string Address { get; set; } = string.Empty;
 
         [Column("status")]

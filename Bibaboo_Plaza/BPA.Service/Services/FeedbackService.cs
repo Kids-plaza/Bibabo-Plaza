@@ -1,5 +1,6 @@
 ﻿using BPA.BusinessObject.Entities;
 using BPA.Repository.IRepositories;
+using BPA.Repository.Repositories;
 using BPA.Service.IServices;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,11 @@ namespace BPA.Service.Services
         public Feedback? GetById(Guid id)
         {
             return _feedbackRepository.GetById(id);
+        }
+
+        public void Update(Feedback feedback)
+        {
+            _feedbackRepository.Update(feedback);
         }
 
     }

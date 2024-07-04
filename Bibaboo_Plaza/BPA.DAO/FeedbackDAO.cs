@@ -9,8 +9,8 @@ namespace BPA.DAO
 {
     public class FeedbackDAO : BaseDAO<Feedback>
     {
-        private static FeedbackDAO instance;
-        private static readonly object lockObject = null;
+        private static FeedbackDAO instance = null;
+        private static readonly object lockObject = new();
         public FeedbackDAO() { }
         public static FeedbackDAO Instance
         {

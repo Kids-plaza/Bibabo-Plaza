@@ -1,5 +1,4 @@
-﻿using BPA.BusinessObject.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,17 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.BusinessObject.Entities
+namespace BPA.BusinessObject.Dtos.Feedback
 {
-    [Table("Report")]
-    public class Report : BaseEntity
+    public class FeedBackRequest
     {
-        [Column("content")]
+        [Required]
         public string Content { get; set; } = string.Empty;
-
-        [Column("customer_id")]
-        [ForeignKey("Customer")]
+        [Required]
         public Guid CustomerId { get; set; }
-        public virtual Account Customer { get; set; } = null!;
+        [Required]
+        public Guid ProductId { get; set; }
     }
 }

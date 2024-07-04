@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
-using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
+using BPA.Service.Services;
+using BPA.BusinessObject.Dtos.Feedback;
+using BPA.BusinessObject.Dtos.Brand;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +17,142 @@ namespace BPA.API.Controllers
     [ApiController]
     public class FeedbacksController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public FeedbacksController(ApplicationDbContext context)
+        private readonly IFeedbackService _feedbackService;
+        public FeedbacksController(IFeedbackService feedbackService)
         {
-            _context = context;
+            _feedbackService = feedbackService;
         }
 
-        // GET: api/Feedbacks
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Feedback>>> GetFeedbacks()
+        [HttpGet("GetAll")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult GetAllFeedbacks()
         {
-            return await _context.Feedbacks.ToListAsync();
-        }
-
-        // GET: api/Feedbacks/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Feedback>> GetFeedback(Guid id)
-        {
-            var feedback = await _context.Feedbacks.FindAsync(id);
-
-            if (feedback == null)
-            {
-                return NotFound();
-            }
-
-            return feedback;
-        }
-
-        // PUT: api/Feedbacks/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFeedback(Guid id, Feedback feedback)
-        {
-            if (id != feedback.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(feedback).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FeedbackExists(id))
+                var list = _feedbackService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
                 }
-                else
-                {
-                    throw;
-                }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Feedbacks
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Feedback>> PostFeedback(Feedback feedback)
-        {
-            _context.Feedbacks.Add(feedback);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetFeedback", new { id = feedback.Id }, feedback);
-        }
-
-        // DELETE: api/Feedbacks/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFeedback(Guid id)
-        {
-            var feedback = await _context.Feedbacks.FindAsync(id);
-            if (feedback == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Feedbacks.Remove(feedback);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool FeedbackExists(Guid id)
+        [HttpGet("GetAllByProduct")]
+        [AllowAnonymous]
+        public IActionResult GetAllFeedbacksByProductId(Guid id)
         {
-            return _context.Feedbacks.Any(e => e.Id == id);
+            try
+            {
+                var list = _feedbackService.GetAll().Where(x => x.ProductId == id && x.IsDeleted == false).ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult GetFeedbackById(Guid id)
+        {
+            try
+            {
+                var feedback = _feedbackService.GetById(id);
+                if (feedback == null || feedback.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(feedback);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Customer")]
+        public IActionResult CreateFeedback(FeedBackRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+
+                var newFeedback = new Feedback
+                {
+                    Content = request.Content,
+                    ProductId = request.ProductId,
+                    CustomerId = request.CustomerId,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _feedbackService.Add(newFeedback);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Customer")]
+        public IActionResult UpdateFeedBack([FromRoute] Guid id, UpdateFeedbackRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundFeedback = _feedbackService.GetById(id);
+                if (foundFeedback == null || foundFeedback.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Feedback");
+                }
+                foundFeedback.Content = request.Content ?? foundFeedback.Content;
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult DeleteFeedback(Guid id)
+        {
+            try
+            {
+                var foundFeedback = _feedbackService.GetById(id);
+                if (foundFeedback == null || foundFeedback.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find FeedBack");
+                }
+                foundFeedback.IsDeleted = true;
+                _feedbackService.Update(foundFeedback);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

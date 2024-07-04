@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
+using BPA.Service.Services;
+using BPA.BusinessObject.Dtos.Feedback;
+using BPA.BusinessObject.Dtos.Post;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +19,125 @@ namespace BPA.API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
 
-        // GET: api/Posts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+        [HttpGet("GetAll")]
+        [AllowAnonymous]
+        public IActionResult GetAllPosts()
         {
-            return await _context.Posts.ToListAsync();
-        }
-
-        // GET: api/Posts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(Guid id)
-        {
-            var post = await _context.Posts.FindAsync(id);
-
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            return post;
-        }
-
-        // PUT: api/Posts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPost(Guid id, Post post)
-        {
-            if (id != post.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(post).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PostExists(id))
+                var list = _postService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
                 }
-                else
-                {
-                    throw;
-                }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Posts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
-        {
-            _context.Posts.Add(post);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
-        }
-
-        // DELETE: api/Posts/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePost(Guid id)
-        {
-            var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool PostExists(Guid id)
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult GetPostById(Guid id)
         {
-            return _context.Posts.Any(e => e.Id == id);
+            try
+            {
+                var post = _postService.GetById(id);
+                if (post == null || post.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult CreatePost(PostRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+
+                var newPost = new Post
+                {
+                    Title = request.Title,
+                    Content = request.Content,
+                    StaffId = request.StaffId,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _postService.Add(newPost);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult UpdatePost([FromRoute] Guid id, UpdatePostRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundPost = _postService.GetById(id);
+                if (foundPost == null || foundPost.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Feedback");
+                }
+                foundPost.Title = request.Title ?? foundPost.Title;
+                foundPost.Content = request.Content ?? foundPost.Content;
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult DeletePost(Guid id)
+        {
+            try
+            {
+                var foundPost = _postService.GetById(id);
+                if (foundPost == null || foundPost.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Post");
+                }
+                foundPost.IsDeleted = true;
+                _postService.Update(foundPost);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

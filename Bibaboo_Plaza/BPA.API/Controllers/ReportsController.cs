@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using Microsoft.AspNetCore.Authorization;
+using BPA.Service.Services;
+using BPA.BusinessObject.Dtos.Post;
+using BPA.BusinessObject.Dtos.Report;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +19,123 @@ namespace BPA.API.Controllers
     [ApiController]
     public class ReportsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IReportService _reportService;
 
-        public ReportsController(ApplicationDbContext context)
+        public ReportsController(IReportService reportService)
         {
-            _context = context;
+            _reportService = reportService;
         }
 
-        // GET: api/Reports
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Report>>> GetReports()
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetAllReports()
         {
-            return await _context.Reports.ToListAsync();
-        }
-
-        // GET: api/Reports/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Report>> GetReport(Guid id)
-        {
-            var report = await _context.Reports.FindAsync(id);
-
-            if (report == null)
-            {
-                return NotFound();
-            }
-
-            return report;
-        }
-
-        // PUT: api/Reports/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReport(Guid id, Report report)
-        {
-            if (id != report.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(report).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReportExists(id))
+                var list = _reportService.GetAll().ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
                 }
-                else
-                {
-                    throw;
-                }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Reports
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Report>> PostReport(Report report)
-        {
-            _context.Reports.Add(report);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReport", new { id = report.Id }, report);
-        }
-
-        // DELETE: api/Reports/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReport(Guid id)
-        {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Reports.Remove(report);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool ReportExists(Guid id)
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult GetReportById(Guid id)
         {
-            return _context.Reports.Any(e => e.Id == id);
+            try
+            {
+                var report = _reportService.GetById(id);
+                if (report == null || report.IsDeleted == true )
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Create")]
+        [AllowAnonymous]
+        public IActionResult CreateReport(ReportRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+
+                var newReport = new Report
+                {
+                    Content = request.Content,
+                    CustomerId = request.CustomerId,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _reportService.Add(newReport);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Update/{id}")]
+        [AllowAnonymous]
+        public IActionResult UpdateReport([FromRoute] Guid id, UpdateReportRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundReport = _reportService.GetById(id);
+                if (foundReport == null || foundReport.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Feedback");
+                }
+                foundReport.Content = request.Content ?? foundReport.Content;
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult DeleteReport(Guid id)
+        {
+            try
+            {
+                var foundReport = _reportService.GetById(id);
+                if (foundReport == null || foundReport.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Report");
+                }
+                foundReport.IsDeleted = true;
+                _reportService.Update(foundReport);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
