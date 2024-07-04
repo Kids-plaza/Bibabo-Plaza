@@ -13,5 +13,6 @@ namespace BPA.Service.IServices
         Feedback? GetById(Guid id);
         void Add(Feedback feedback);
         void Delete(Feedback feedback);
+        void Update(Feedback feedback);
     }
 }

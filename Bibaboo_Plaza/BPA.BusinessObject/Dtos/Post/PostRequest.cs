@@ -1,5 +1,4 @@
-﻿using BPA.BusinessObject.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,18 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPA.BusinessObject.Entities
+namespace BPA.BusinessObject.Dtos.Post
 {
-    [Table("Post")]
-    public class Post : BaseEntity
+    public class PostRequest
     {
-        [Column("title")]
+        [Required]
+        [StringLength(50)]
         public string Title { get; set; } = string.Empty;
-        [Column("content")]
+        [Required]
         public string Content { get; set; } = string.Empty;
-        [Column("staff_id")]
-        [ForeignKey("Staff")]
+        [Required]
         public Guid StaffId { get; set; }
-        public virtual Account Staff { get; set; } = null!;
     }
 }

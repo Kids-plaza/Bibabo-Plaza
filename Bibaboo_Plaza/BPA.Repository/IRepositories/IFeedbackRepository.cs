@@ -12,6 +12,7 @@ namespace BPA.Repository.IRepositories
         IEnumerable<Feedback> GetAll();
         Feedback? GetById(Guid id);
         void Add(Feedback feedback);
+        void Update(Feedback feedback);
         void Delete(Feedback feedback);
     }
 }

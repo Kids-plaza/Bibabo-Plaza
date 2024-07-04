@@ -7,6 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using BPA.Service.Services;
+using Microsoft.AspNetCore.Authorization;
+using BPA.BusinessObject.Dtos.Account;
+using BPA.BusinessObject.Enums;
+using BPA.BusinessObject.Dtos.Product;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +21,229 @@ namespace BPA.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public ProductsController(ApplicationDbContext context)
+        private readonly IProductService _productService;
+        public ProductsController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
-        // GET: api/Products
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        [HttpGet("GetAll")]
+        [AllowAnonymous]
+        public IActionResult GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
-        }
-
-        // GET: api/Products/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id)
-        {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return product;
-        }
-
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
-        {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(product).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
+                var list = _productService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetAllByBrand")]
+        [AllowAnonymous]
+        public IActionResult GetAllProductsByBrandId(Guid id)
+        {
+            try
+            {
+                var list = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false).ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult GetProductById(Guid id)
+        {
+            try
+            {
+                var product = _productService.GetById(id);
+                if (product == null || product.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Search")]
+        [AllowAnonymous]
+        public IActionResult SearchAccountByName(string input)
+        {
+            try
+            {
+                var listByName = _productService.GetAll().Where(x => x.ProductName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                IList<Product> list = new List<Product>();
+                if (!listByName.Any())
+                {
+                    return NotFound("Cannot Find Product");
+                }
+                else if (listByName.Any())
+                {
+                    list = listByName;
                 }
                 else
                 {
-                    throw;
+                    list = _productService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
-        {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        }
-
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool ProductExists(Guid id)
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult CreateProduct(ProductRequest request)
         {
-            return _context.Products.Any(e => e.Id == id);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var listByName = _productService.GetAll().Where(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);
+                if (listByName.Any())
+                {
+                    return BadRequest("Product With Email " + request.ProductName + " Already Exist");
+                }
+
+                var newProduct = new Product
+                {
+                    ProductName = request.ProductName,
+                    Price = request.Price,
+                    Quantity = request.Quantity,
+                    Description = request.Description,
+                    BrandId = request.BrandId,
+                    Status = ProductStatus.InStock,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _productService.Add(newProduct);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult UpdateProduct([FromRoute] Guid id, ProductRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundProduct = _productService.GetById(id);
+                if (foundProduct == null || foundProduct.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+
+                var existingProductByName = _productService.GetAll().FirstOrDefault(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);
+
+                if (request.ProductName != null && !request.ProductName.Equals(foundProduct.ProductName))
+                {
+                    if (existingProductByName != null)
+                        return BadRequest("Name Is Already Used");
+                    foundProduct.ProductName = request.ProductName;
+                }
+                foundProduct.Price = request.Price;
+                foundProduct.Quantity = request.Quantity;
+                foundProduct.Description = request.Description ?? foundProduct.Description;
+
+                _productService.Update(foundProduct);
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("ChangeStatus/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult ChangeStatus([FromRoute] Guid id)
+        {
+            try
+            {
+                var foundProduct = _productService.GetById(id);
+                if (foundProduct == null || foundProduct.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Product");
+                }
+                switch (foundProduct.Status)
+                {
+                    case ProductStatus.InStock:
+                        foundProduct.Status = ProductStatus.OutOfStock;
+                        break;
+                    case ProductStatus.OutOfStock:
+                        foundProduct.Status = ProductStatus.InStock;
+                        break;
+                    default:
+                        foundProduct.Status = ProductStatus.OutOfStock;
+                        break;
+                }
+                _productService.Update(foundProduct);
+
+                return Ok("Change Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult DeleteProduct([FromRoute] Guid id)
+        {
+            try
+            {
+                var foundProduct = _productService.GetById(id);
+                //var hasOrder = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false);
+                if (foundProduct == null || foundProduct.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Product");
+                }
+                //if (hasProduct.IsNullOrEmpty())
+                //{
+                foundProduct.IsDeleted = true;
+                _productService.Update(foundProduct);
+                return Ok("Delete Successfully");
+                //}
+                //return BadRequest("Cannot Delete Brand");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -13,13 +13,12 @@ namespace BPA.BusinessObject.Entities
     public class Feedback : BaseEntity
     {
         [Column("content")]
-        [Required]
         public string Content {  get; set; } = string.Empty;
 
-        [Column("account_id")]
-        [ForeignKey("account")]
-        public Guid AccountId { get; set; }
-        public virtual Account Account { get; set; }
+        [Column("customer_id")]
+        [ForeignKey("Customer")]
+        public Guid CustomerId { get; set; }
+        public virtual Account Customer { get; set; }
 
         [Column("product_id")]
         [ForeignKey("product")]

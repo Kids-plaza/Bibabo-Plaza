@@ -9,6 +9,9 @@ using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
 using BPA.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
+using BPA.Service.Services;
+using BPA.BusinessObject.Dtos.Post;
+using BPA.BusinessObject.Dtos.Report;
 
 namespace BPA.API.Controllers
 {
@@ -24,7 +27,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult GetAllReports()
         {
             try
@@ -43,17 +46,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult GetReportById(Guid id)
         {
             try
             {
-                var account = _reportService.GetById(id);
-                if (account == null)
+                var report = _reportService.GetById(id);
+                if (report == null || report.IsDeleted == true )
                 {
                     return NotFound("Cannot Find Id");
                 }
-                return Ok(account);
+                return Ok(report);
             }
             catch (Exception ex)
             {
@@ -63,7 +66,7 @@ namespace BPA.API.Controllers
 
         [HttpPost("Create")]
         [AllowAnonymous]
-        public IActionResult CreateReport(Report request)
+        public IActionResult CreateReport(ReportRequest request)
         {
             try
             {
@@ -71,7 +74,15 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                _reportService.Add(request);
+
+                var newReport = new Report
+                {
+                    Content = request.Content,
+                    CustomerId = request.CustomerId,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _reportService.Add(newReport);
 
                 return Ok("Add Successfully");
             }
@@ -81,20 +92,50 @@ namespace BPA.API.Controllers
             }
         }
 
+        [HttpPut("Update/{id}")]
+        [AllowAnonymous]
+        public IActionResult UpdateReport([FromRoute] Guid id, UpdateReportRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundReport = _reportService.GetById(id);
+                if (foundReport == null || foundReport.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Feedback");
+                }
+                foundReport.Content = request.Content ?? foundReport.Content;
 
-        [HttpDelete]
-        [Authorize(Roles = "Admin")]
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult DeleteReport(Guid id)
         {
-            var feedback = _reportService.GetById(id);
-            if (feedback == null)
+            try
             {
-                return NotFound();
+                var foundReport = _reportService.GetById(id);
+                if (foundReport == null || foundReport.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Report");
+                }
+                foundReport.IsDeleted = true;
+                _reportService.Update(foundReport);
+                return Ok("Delete Successfully");
             }
-
-            _reportService.Delete(feedback);
-
-            return Ok("Delete Successfully");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

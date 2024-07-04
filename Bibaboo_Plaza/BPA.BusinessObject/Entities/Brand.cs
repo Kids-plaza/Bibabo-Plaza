@@ -13,20 +13,15 @@ namespace BPA.BusinessObject.Entities
         public class Brand : BaseEntity
         {
             [Column("brand_name")]
-            [Required]
             public string BrandName { get; set; } = string.Empty;
 
             [Column("brand_address")]
-            [Required]
             public string BrandAddress { get; set; } = string.Empty;
 
             [Column("brand_phone")]
-            [Required]
-            [Phone]
             public string BrandPhone { get; set; } = string.Empty;
 
             [Column("description")]
-            [Required]
             public string Description { get; set; } = string.Empty;
     }
 }

@@ -9,24 +9,24 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BPA.Infastructure.Migrations
+namespace BPA.DAO.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240607125222_update")]
-    partial class update
+    [Migration("20240704122237_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("bpa")
+                .HasDefaultSchema("BPA")
                 .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BPA.Domain.Entities.Account", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,13 +35,8 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("address");
-
-                    b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
+                        .HasColumnName("address");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
@@ -49,21 +44,13 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("email");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("fullname");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("image_url");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -76,8 +63,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("phone_number");
 
                     b.Property<int>("Role")
@@ -88,25 +74,12 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("status");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("username");
-
                     b.HasKey("Id");
 
-                    b.ToTable("account", "bpa");
+                    b.ToTable("Account", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Brand", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Brand", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -128,10 +101,6 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("brand_phone");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
@@ -141,52 +110,34 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasColumnName("image_url");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.ToTable("brand", "bpa");
+                    b.ToTable("Brand", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Feedback", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("account_id");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -196,41 +147,29 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Feedbacks", "bpa");
+                    b.ToTable("Feedback", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("account_id");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -244,31 +183,19 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("float")
                         .HasColumnName("total");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("CustomerId");
 
-                    b.ToTable("Order", "bpa");
+                    b.ToTable("Order", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
@@ -294,14 +221,6 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("float")
                         .HasColumnName("total");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.Property<Guid>("order")
                         .HasColumnType("uniqueidentifier");
 
@@ -311,28 +230,20 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("order");
 
-                    b.ToTable("OrderDetails", "bpa");
+                    b.ToTable("OrderDetail", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("account_id");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
@@ -342,27 +253,23 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
+                    b.Property<Guid>("StaffId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("staff_id");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("title");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("StaffId");
 
-                    b.ToTable("post", "bpa");
+                    b.ToTable("Post", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -372,10 +279,6 @@ namespace BPA.Infastructure.Migrations
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("brand_id");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
@@ -412,152 +315,84 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("status");
 
-                    b.Property<Guid>("TypeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("type_id");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BrandId")
-                        .IsUnique();
+                    b.HasIndex("BrandId");
 
-                    b.HasIndex("TypeId");
-
-                    b.ToTable("product", "bpa");
+                    b.ToTable("Product", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Report", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("type_name");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("type", "bpa");
-                });
-
-            modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("account_id");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by");
+                        .HasColumnName("content");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("updated_on");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("CustomerId");
 
-                    b.ToTable("Reports", "bpa");
+                    b.ToTable("Report", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Feedback", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Account")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
                         .WithMany()
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.Domain.Entities.Product", "Product")
+                    b.HasOne("BPA.BusinessObject.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Customer");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
+                        .WithMany("CustomerOrders")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Product", "product")
-                        .WithMany()
+                    b.HasOne("BPA.BusinessObject.Entities.Product", "product")
+                        .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.Domain.Entities.Order", "Order")
-                        .WithMany()
+                    b.HasOne("BPA.BusinessObject.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
                         .HasForeignKey("order")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -567,56 +402,54 @@ namespace BPA.Infastructure.Migrations
                     b.Navigation("product");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Staff")
+                        .WithMany("StaffPosts")
+                        .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Brand", "Brand")
-                        .WithOne("Product")
-                        .HasForeignKey("BPA.Domain.Entities.Product", "BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BPA.Domain.Entities.ProductType", "Type")
-                        .WithMany("Products")
-                        .HasForeignKey("TypeId")
+                    b.HasOne("BPA.BusinessObject.Entities.Brand", "Brand")
+                        .WithMany()
+                        .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Brand");
-
-                    b.Navigation("Type");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Report", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Account")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
                         .WithMany()
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Brand", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Account", b =>
                 {
-                    b.Navigation("Product")
-                        .IsRequired();
+                    b.Navigation("CustomerOrders");
+
+                    b.Navigation("StaffPosts");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

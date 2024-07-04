@@ -9,6 +9,9 @@ using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
 using BPA.Service.IServices;
 using Microsoft.AspNetCore.Authorization;
+using BPA.Service.Services;
+using BPA.BusinessObject.Dtos.Feedback;
+using BPA.BusinessObject.Dtos.Post;
 
 namespace BPA.API.Controllers
 {
@@ -23,13 +26,13 @@ namespace BPA.API.Controllers
             _postService = postService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         [AllowAnonymous]
         public IActionResult GetAllPosts()
         {
             try
             {
-                var list = _postService.GetAll().ToList();
+                var list = _postService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -43,17 +46,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        [Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "Staff")]
         public IActionResult GetPostById(Guid id)
         {
             try
             {
-                var account = _postService.GetById(id);
-                if (account == null)
+                var post = _postService.GetById(id);
+                if (post == null || post.IsDeleted == true)
                 {
                     return NotFound("Cannot Find Id");
                 }
-                return Ok(account);
+                return Ok(post);
             }
             catch (Exception ex)
             {
@@ -62,8 +65,8 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        [Authorize(Roles = "Staff")]
-        public IActionResult CreateFeedback(Post request)
+        //[Authorize(Roles = "Staff")]
+        public IActionResult CreatePost(PostRequest request)
         {
             try
             {
@@ -71,7 +74,16 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                _postService.Add(request);
+
+                var newPost = new Post
+                {
+                    Title = request.Title,
+                    Content = request.Content,
+                    StaffId = request.StaffId,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _postService.Add(newPost);
 
                 return Ok("Add Successfully");
             }
@@ -81,20 +93,51 @@ namespace BPA.API.Controllers
             }
         }
 
-
-        [HttpDelete]
-        [Authorize(Roles = "Staff")]
-        public async Task<IActionResult> DeleteFeedback(Guid id)
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult UpdatePost([FromRoute] Guid id, UpdatePostRequest request)
         {
-            var feedback = _postService.GetById(id);
-            if (feedback == null)
+            try
             {
-                return NotFound();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundPost = _postService.GetById(id);
+                if (foundPost == null || foundPost.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Feedback");
+                }
+                foundPost.Title = request.Title ?? foundPost.Title;
+                foundPost.Content = request.Content ?? foundPost.Content;
+
+                return Ok("Update Successfully");
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-            _postService.Delete(feedback);
-
-            return Ok("Delete Successfully");
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult DeletePost(Guid id)
+        {
+            try
+            {
+                var foundPost = _postService.GetById(id);
+                if (foundPost == null || foundPost.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Post");
+                }
+                foundPost.IsDeleted = true;
+                _postService.Update(foundPost);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

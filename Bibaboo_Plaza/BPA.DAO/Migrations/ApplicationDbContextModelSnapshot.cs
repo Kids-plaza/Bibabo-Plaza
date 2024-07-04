@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BPA.Infastructure.Migrations
+namespace BPA.DAO.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -23,7 +23,7 @@ namespace BPA.Infastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BPA.Domain.Entities.Account", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Account", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,8 +32,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
                     b.Property<DateTime>("CreatedOn")
@@ -42,14 +41,12 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("email");
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("fullname");
 
                     b.Property<bool>("IsDeleted")
@@ -63,8 +60,7 @@ namespace BPA.Infastructure.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("phone_number");
 
                     b.Property<int>("Role")
@@ -80,7 +76,7 @@ namespace BPA.Infastructure.Migrations
                     b.ToTable("Account", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Brand", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Brand", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,16 +116,12 @@ namespace BPA.Infastructure.Migrations
                     b.ToTable("Brand", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Feedback", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
-
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("account_id");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -139,6 +131,10 @@ namespace BPA.Infastructure.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -150,14 +146,14 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("Feedback", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +187,7 @@ namespace BPA.Infastructure.Migrations
                     b.ToTable("Order", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,7 +230,7 @@ namespace BPA.Infastructure.Migrations
                     b.ToTable("OrderDetail", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -270,7 +266,7 @@ namespace BPA.Infastructure.Migrations
                     b.ToTable("Post", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -308,9 +304,6 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("product_name");
 
-                    b.Property<Guid?>("ProductTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
@@ -323,42 +316,10 @@ namespace BPA.Infastructure.Migrations
 
                     b.HasIndex("BrandId");
 
-                    b.HasIndex("ProductTypeId");
-
                     b.ToTable("Product", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("created_on");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("TypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("type_name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Type", "BPA");
-                });
-
-            modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Report", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -374,43 +335,43 @@ namespace BPA.Infastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<Guid>("StaffId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("staff_id");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("StaffId");
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Report", "BPA");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Feedback", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Feedback", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Account")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
                         .WithMany()
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.Domain.Entities.Product", "Product")
+                    b.HasOne("BPA.BusinessObject.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Customer");
 
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Customer")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
                         .WithMany("CustomerOrders")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -419,15 +380,15 @@ namespace BPA.Infastructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.OrderDetail", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Product", "product")
+                    b.HasOne("BPA.BusinessObject.Entities.Product", "product")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.Domain.Entities.Order", "Order")
+                    b.HasOne("BPA.BusinessObject.Entities.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("order")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -438,9 +399,9 @@ namespace BPA.Infastructure.Migrations
                     b.Navigation("product");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Post", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Staff")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Staff")
                         .WithMany("StaffPosts")
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -449,52 +410,43 @@ namespace BPA.Infastructure.Migrations
                     b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Brand", "Brand")
+                    b.HasOne("BPA.BusinessObject.Entities.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.Domain.Entities.ProductType", null)
-                        .WithMany("Products")
-                        .HasForeignKey("ProductTypeId");
-
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Report", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Report", b =>
                 {
-                    b.HasOne("BPA.Domain.Entities.Account", "Staff")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "Customer")
                         .WithMany()
-                        .HasForeignKey("StaffId")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Staff");
+                    b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Account", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Account", b =>
                 {
                     b.Navigation("CustomerOrders");
 
                     b.Navigation("StaffPosts");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Order", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("BPA.Domain.Entities.Product", b =>
+            modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
                     b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("BPA.Domain.Entities.ProductType", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -26,7 +26,6 @@ namespace BPA.API.Controllers
         {
             _accountService = accountService;
             _config = config;
-
         }
 
         [HttpPost("SignIn")]
@@ -71,7 +70,7 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Confirm password do not match password");
                 }
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email));
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
                 if (listByEmail.Any())
                 {
                     return BadRequest("Account With Email " + request.Email + " Already Exist");
@@ -86,6 +85,8 @@ namespace BPA.API.Controllers
                     Address = request.Address,
                     Role = RoleType.Customer,
                     Status = AccountStatus.Active,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
                 };
                 _accountService.Add(newAccount);
                 return Ok("Sign Up Successfully");
@@ -97,12 +98,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult GetAllAccounts()
         {
             try
             {
-                var list = _accountService.GetAll().ToList();
+                var list = _accountService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -116,13 +117,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult GetAccountById(Guid id)
         {
             try
             {
                 var account = _accountService.GetById(id);
-                if (account == null)
+                if (account == null || account.IsDeleted == true)
                 {
                     return NotFound("Cannot Find Id");
                 }
@@ -135,13 +136,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("Search")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult SearchAccountByEmailOrName(string input)
         {
             try
             {
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
-                var listByName = _accountService.GetAll().Where(x => x.FullName!.Contains(input, StringComparison.OrdinalIgnoreCase)).ToList();
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                var listByName = _accountService.GetAll().Where(x => x.FullName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
                 IList<Account> list = new List<Account>();
                 if (!listByEmail.Any() && !listByName.Any())
                 {
@@ -157,7 +158,7 @@ namespace BPA.API.Controllers
                 }
                 else 
                 {
-                    list = _accountService.GetAll().ToList();
+                    list = _accountService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 }
                 return Ok(list);
             }
@@ -167,8 +168,8 @@ namespace BPA.API.Controllers
             }
         }
 
-        [HttpPost("CreateAccount")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult CreateAccount(CreateAccountRequest request)
         {
             try
@@ -177,7 +178,7 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email));
+                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
                 if (listByEmail.Any())
                 {
                     return BadRequest("Account With Email " + request.Email + " Already Exist");
@@ -192,6 +193,8 @@ namespace BPA.API.Controllers
                     Address = request.Address,
                     Role = request.Role,
                     Status = AccountStatus.Active,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
                 };
                 _accountService.Add(newAccount);
 
@@ -204,6 +207,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("SelfUpdate/{id}")]
+        [AllowAnonymous]
         public IActionResult UpdateAccount([FromRoute] Guid id, UpdateAccountRequest request)
         {
             try
@@ -213,12 +217,12 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null)
+                if (foundAccount == null || foundAccount.IsDeleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
 
-                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email!.Equals(request.Email));
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
 
                 if (request.Email != null && !request.Email.Equals(foundAccount.Email))
                 {
@@ -242,7 +246,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("AdminUpdate/{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult UpdateAccountWithRoleAdmin([FromRoute] Guid id, AdminUpdateRequest request)
         {
             try
@@ -252,12 +256,12 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null)
+                if (foundAccount == null || foundAccount.IsDeleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
 
-                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email == request.Email);
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email == request.Email && x.IsDeleted == false);
                 if (request.Email != null && !request.Email.Equals(foundAccount.Email))
                 {
                     if (existingAccountByEmail != null)
@@ -268,7 +272,6 @@ namespace BPA.API.Controllers
                 foundAccount.Address = request.Address ?? foundAccount.Address;
                 foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
                 foundAccount.Role = request.Role;
-                foundAccount.IsDeleted = request.IsDeleted;
                 _accountService.Update(foundAccount);
 
                 return Ok("Update Successfully");
@@ -280,13 +283,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("ChangeStatus/{id}")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult ChangeStatus([FromRoute] Guid id)
         {
             try
             {
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null)
+                if (foundAccount == null || foundAccount.IsDeleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
@@ -316,18 +319,29 @@ namespace BPA.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult DeleteAccount([FromRoute] Guid id)
         {
-            var account = _accountService.GetById(id);
-            if (account == null)
+            try
             {
-                return NotFound("Cannot Find Account");
+                var foundAccount = _accountService.GetById(id);
+                if (foundAccount == null || foundAccount.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Account");
+                }
+                if (foundAccount.Role == RoleType.Admin)
+                {
+                    return BadRequest("User With Admin Role Cannot Be Deleted");
+                }
+                foundAccount.IsDeleted = true;
+                _accountService.Update(foundAccount);
+                return Ok("Delete Successfully");
             }
-
-            _accountService.Delete(account);
-            return Ok("Delete Successfully");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private string GenerateJWT(Account account)

@@ -14,11 +14,9 @@ namespace BPA.BusinessObject.Entities
     public class Product : BaseEntity
     {
         [Column("product_name")]
-        [Required]
         public string ProductName { get; set; } = string.Empty;
 
         [Column("price")]
-        [Required]
         public double Price { get; set; } = 0;
 
         [Column("description")]
@@ -28,12 +26,11 @@ namespace BPA.BusinessObject.Entities
         public string ImageUrl { get; set; } = string.Empty;
 
         [Column("quantity")]
-        [Required]
         public int Quantity { get; set; } = 0;
 
         [Column("status")]
         [EnumDataType(typeof(ProductStatus))]
-        public ProductStatus Status { get; set; } = ProductStatus.ComingSoon;
+        public ProductStatus Status { get; set; }
 
         [Column("brand_id")]
         [ForeignKey("brand")]
