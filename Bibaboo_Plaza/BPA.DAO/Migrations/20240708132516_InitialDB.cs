@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BPA.DAO.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,8 +59,9 @@ namespace BPA.DAO.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    total = table.Column<double>(type: "float", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false),
+                    total_price = table.Column<double>(type: "float", nullable: false),
+                    total_quantity = table.Column<int>(type: "int", nullable: false),
+                    order_status = table.Column<int>(type: "int", nullable: false),
                     customer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_on = table.Column<DateTime>(type: "datetime2", nullable: false),
                     is_deleted = table.Column<bool>(type: "bit", nullable: false)
@@ -191,8 +192,7 @@ namespace BPA.DAO.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<double>(type: "float", nullable: false),
-                    total = table.Column<double>(type: "float", nullable: false),
-                    order = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_on = table.Column<DateTime>(type: "datetime2", nullable: false),
                     is_deleted = table.Column<bool>(type: "bit", nullable: false)
@@ -201,8 +201,8 @@ namespace BPA.DAO.Migrations
                 {
                     table.PrimaryKey("PK_OrderDetail", x => x.id);
                     table.ForeignKey(
-                        name: "FK_OrderDetail_Order_order",
-                        column: x => x.order,
+                        name: "FK_OrderDetail_Order_order_id",
+                        column: x => x.order_id,
                         principalSchema: "BPA",
                         principalTable: "Order",
                         principalColumn: "id",
@@ -235,10 +235,10 @@ namespace BPA.DAO.Migrations
                 column: "customer_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderDetail_order",
+                name: "IX_OrderDetail_order_id",
                 schema: "BPA",
                 table: "OrderDetail",
-                column: "order");
+                column: "order_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetail_product_id",

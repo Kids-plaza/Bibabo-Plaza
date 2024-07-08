@@ -172,13 +172,17 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("OrderStatus")
                         .HasColumnType("int")
-                        .HasColumnName("status");
+                        .HasColumnName("order_status");
 
-                    b.Property<double>("Total")
+                    b.Property<double>("TotalPrice")
                         .HasColumnType("float")
-                        .HasColumnName("total");
+                        .HasColumnName("total_price");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("int")
+                        .HasColumnName("total_quantity");
 
                     b.HasKey("Id");
 
@@ -202,6 +206,10 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("order_id");
+
                     b.Property<double>("Price")
                         .HasColumnType("float")
                         .HasColumnName("price");
@@ -214,18 +222,11 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
-                    b.Property<double>("Total")
-                        .HasColumnType("float")
-                        .HasColumnName("total");
-
-                    b.Property<Guid>("order")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("OrderId");
 
-                    b.HasIndex("order");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetail", "BPA");
                 });
@@ -382,15 +383,15 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("BPA.BusinessObject.Entities.Product", "product")
+                    b.HasOne("BPA.BusinessObject.Entities.Order", "Order")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BPA.BusinessObject.Entities.Order", "Order")
+                    b.HasOne("BPA.BusinessObject.Entities.Product", "product")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("order")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
