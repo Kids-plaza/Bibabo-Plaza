@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BPA.BusinessObject.Entities;
 using BPA.DAO.Context;
+using BPA.Service.IServices;
+using BPA.Service.Services;
+using Microsoft.AspNetCore.Authorization;
+using BPA.BusinessObject.Dtos.Post;
+using BPA.BusinessObject.Enums;
+using BPA.BusinessObject.Dtos.Order;
 
 namespace BPA.API.Controllers
 {
@@ -14,95 +20,209 @@ namespace BPA.API.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public OrdersController(ApplicationDbContext context)
+        private readonly IOrderService _orderService;
+        public OrdersController(IOrderService orderService)
         {
-            _context = context;
+            _orderService = orderService;
         }
 
-        // GET: api/Orders
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        [HttpGet("GetAll")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult GetAllOrders()
         {
-            return await _context.Orders.ToListAsync();
-        }
-
-        // GET: api/Orders/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(Guid id)
-        {
-            var order = await _context.Orders.FindAsync(id);
-
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            return order;
-        }
-
-        // PUT: api/Orders/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(Guid id, Order order)
-        {
-            if (id != order.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(order).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
+                var list = _orderService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                if (!list.Any())
                 {
-                    return NotFound();
+                    return NotFound("No Data");
                 }
-                else
-                {
-                    throw;
-                }
+                return Ok(list);
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Orders
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Order>> PostOrder(Order order)
-        {
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
-        }
-
-        // DELETE: api/Orders/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(Guid id)
-        {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
 
-        private bool OrderExists(Guid id)
+        [HttpGet("GetAllByStatus")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult GetAllOrdersByStatus(string input)
         {
-            return _context.Orders.Any(e => e.Id == id);
+            try
+            {
+                var list = _orderService.GetAll().Where(x => x.OrderStatus.ToString() == input && x.IsDeleted == false).ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult GetOrderById(Guid id)
+        {
+            try
+            {
+                var order = _orderService.GetById(id);
+                if (order == null || order.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Id");
+                }
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("Create")]
+        //[Authorize(Roles = "Customer")]
+        public IActionResult CreateOrder(OrderRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+
+                var newOrder = new Order
+                {
+                    TotalPrice = request.TotalPrice,
+                    TotalQuantity = request.TotalQuantity,
+                    CustomerId = request.CustomerId,
+                    OrderStatus = OrderStatus.Pending,
+                    CreatedOn = DateTime.Now,
+                    IsDeleted = false,
+                };
+                _orderService.Add(newOrder);
+
+                return Ok("Add Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Update/{id}")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult UpdateOrder([FromRoute] Guid id, OrderRequest request)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid Input");
+                }
+                var foundOrder = _orderService.GetById(id);
+                if (foundOrder == null || foundOrder.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Order");
+                }
+                foundOrder.TotalPrice = request.TotalPrice;
+                foundOrder.TotalQuantity = request.TotalQuantity;
+                foundOrder.CustomerId = request.CustomerId;
+
+                return Ok("Update Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("ChangeOrderStatus/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult ChangeOrderStatus(Guid id)
+        {
+            try
+            {
+                var foundOrder = _orderService.GetById(id);
+                if (foundOrder == null || foundOrder.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Post");
+                }
+                switch (foundOrder.OrderStatus)
+                {
+                    case OrderStatus.Pending:
+                        foundOrder.OrderStatus = OrderStatus.Processing;
+                        break;
+                    case OrderStatus.Processing:
+                        foundOrder.OrderStatus = OrderStatus.Completed;
+                        break;
+                    default:
+                        foundOrder.OrderStatus = foundOrder.OrderStatus;
+                        break;
+                }
+                _orderService.Update(foundOrder);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("CancelOrder/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult CancelOrder(Guid id)
+        {
+            try
+            {
+                var foundOrder = _orderService.GetById(id);
+                if (foundOrder == null || foundOrder.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Post");
+                }
+                switch (foundOrder.OrderStatus)
+                {
+                    case OrderStatus.Pending:
+                        foundOrder.OrderStatus = OrderStatus.Cancelled;
+                        break;
+                    case OrderStatus.Processing:
+                        foundOrder.OrderStatus = OrderStatus.Cancelled;
+                        break;
+                    default:
+                        foundOrder.OrderStatus = foundOrder.OrderStatus;
+                        break;
+                }
+                _orderService.Update(foundOrder);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Delete/{id}")]
+        //[Authorize(Roles = "Staff")]
+        public IActionResult DeleteOrder(Guid id)
+        {
+            try
+            {
+                var foundOrder = _orderService.GetById(id);
+                if (foundOrder == null || foundOrder.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Post");
+                }
+                foundOrder.IsDeleted = true;
+                _orderService.Update(foundOrder);
+                return Ok("Delete Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -267,7 +267,7 @@ namespace BPA.API.Controllers
                     if (existingAccountByEmail != null)
                         return BadRequest("Email Is Already Used");
                     foundAccount.Email = request.Email;
-                }
+                }  
                 foundAccount.FullName = request.FullName ?? foundAccount.FullName;
                 foundAccount.Address = request.Address ?? foundAccount.Address;
                 foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
