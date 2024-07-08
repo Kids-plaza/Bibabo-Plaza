@@ -13,13 +13,15 @@ namespace BPA.BusinessObject.Entities
     [Table("Order")]
     public class Order : BaseEntity
     {
-        [Column("total")]
-        [Required]
-        public double Total {  get; set; }
+        [Column("total_price")]
+        public double TotalPrice { get; set; } = 0;
 
-        [Column("status")]
+        [Column("total_quantity")]
+        public int TotalQuantity { get; set; } = 0;
+
+        [Column("order_status")]
         [EnumDataType(typeof(OrderStatus))]
-        public OrderStatus Status { get; set; } = OrderStatus.Processing;
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
 
         [Column("customer_id")]
         [ForeignKey("Customer")]

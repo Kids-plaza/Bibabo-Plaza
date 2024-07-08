@@ -20,13 +20,10 @@ namespace BPA.BusinessObject.Entities
         [Required]
         public double Price { get; set; }
 
-        [Column("total")]
-        [Required]
-        public double Total {  get; set; }
-
         [Column("order_id")]
-        [ForeignKey("order")]
-        public virtual Order Order { get; set; }
+        [ForeignKey(nameof(Order))]
+        public Guid OrderId { get; set; }
+        public virtual Order Order { get; set; } = null!;
 
         [Column("product_id")]
         [ForeignKey("product")]

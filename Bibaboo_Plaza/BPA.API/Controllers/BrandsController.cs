@@ -75,7 +75,7 @@ namespace BPA.API.Controllers
             {
                 var listByName = _brandService.GetAll().Where(x => x.BrandName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
                 IList<Brand> list = new List<Brand>();
-                if (!!listByName.Any())
+                if (!listByName.Any())
                 {
                     return NotFound("Cannot Find Brand");
                 }
