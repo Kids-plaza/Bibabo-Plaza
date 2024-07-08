@@ -45,6 +45,25 @@ namespace BPA.API.Controllers
             }
         }
 
+        [HttpGet("GetAllByStatus")]
+        //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult GetAllOrdersByStatus(string input)
+        {
+            try
+            {
+                var list = _orderService.GetAll().Where(x => x.OrderStatus.ToString() == input && x.IsDeleted == false).ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("GetById")]
         //[Authorize(Roles = "Customer,Staff")]
         public IActionResult GetOrderById(Guid id)
