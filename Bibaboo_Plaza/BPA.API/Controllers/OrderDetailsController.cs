@@ -25,7 +25,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Staff")]
         public IActionResult GetAllOrderDetails()
         {
             try
@@ -63,7 +63,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Staff")]
         public IActionResult GetOrderDetailById(Guid id)
         {
             try
@@ -112,8 +112,8 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Customer,Staff")]
-        public IActionResult UpdateOrderDetail([FromRoute] Guid id, UpdateOrderDetailRequest request)
+        //[Authorize(Roles = "Customer")]
+        public IActionResult UpdateOrderDetail(Guid id, UpdateOrderDetailRequest request)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "Customer")]
         public IActionResult DeleteOrderDetail(Guid id)
         {
             try

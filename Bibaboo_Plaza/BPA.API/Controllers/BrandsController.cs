@@ -132,7 +132,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Update/{id}")]
         //[Authorize(Roles = "Staff")]
-        public IActionResult UpdateBrand([FromRoute] Guid id, BrandRequest request)
+        public IActionResult UpdateBrand(Guid id, BrandRequest request)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Delete/{id}")]
         //[Authorize(Roles = "Staff")]
-        public IActionResult DeleteBrand([FromRoute] Guid id)
+        public IActionResult DeleteBrand(Guid id)
         {
             try
             {

@@ -95,7 +95,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Update/{id}")]
         //[Authorize(Roles = "Staff")]
-        public IActionResult UpdatePost([FromRoute] Guid id, UpdatePostRequest request)
+        public IActionResult UpdatePost(Guid id, UpdatePostRequest request)
         {
             try
             {

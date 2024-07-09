@@ -27,7 +27,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Staff")]
         public IActionResult GetAllOrders()
         {
             try
@@ -64,8 +64,27 @@ namespace BPA.API.Controllers
             }
         }
 
-        [HttpGet("GetById")]
+        [HttpGet("GetAllByCustomerId")]
         //[Authorize(Roles = "Customer,Staff")]
+        public IActionResult GetAllOrdersByCustomerId(Guid id)
+        {
+            try
+            {
+                var list = _orderService.GetAll().Where(x => x.CustomerId == id && x.IsDeleted == false).ToList();
+                if (!list.Any())
+                {
+                    return NotFound("No Data");
+                }
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetById")]
+        //[Authorize(Roles = "Staff,Customer")]
         public IActionResult GetOrderById(Guid id)
         {
             try
@@ -115,7 +134,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Update/{id}")]
         //[Authorize(Roles = "Customer,Staff")]
-        public IActionResult UpdateOrder([FromRoute] Guid id, OrderRequest request)
+        public IActionResult UpdateOrder(Guid id, OrderRequest request)
         {
             try
             {

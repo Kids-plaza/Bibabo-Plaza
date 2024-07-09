@@ -41,7 +41,7 @@ namespace BPA.API.Controllers
                 var account = _accountService.GetAccountByEmailAndPassword(request);
                 if (account == null)
                 {
-                    return Unauthorized("Invalid Username Or Password");
+                    return Unauthorized("Invalid Email Or Password");
                 }
                 if (account.Status == AccountStatus.Banned)
                 {
@@ -207,8 +207,8 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("SelfUpdate/{id}")]
-        [AllowAnonymous]
-        public IActionResult UpdateAccount([FromRoute] Guid id, UpdateAccountRequest request)
+        //[Authorize(Roles = "Admin,Customer,Staff")]
+        public IActionResult UpdateAccount(Guid id, UpdateAccountRequest request)
         {
             try
             {
@@ -247,7 +247,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("AdminUpdate/{id}")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult UpdateAccountWithRoleAdmin([FromRoute] Guid id, AdminUpdateRequest request)
+        public IActionResult UpdateAccountWithRoleAdmin(Guid id, AdminUpdateRequest request)
         {
             try
             {
@@ -284,7 +284,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("ChangeStatus/{id}")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult ChangeStatus([FromRoute] Guid id)
+        public IActionResult ChangeStatus(Guid id)
         {
             try
             {
@@ -321,7 +321,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Delete/{id}")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult DeleteAccount([FromRoute] Guid id)
+        public IActionResult DeleteAccount(Guid id)
         {
             try
             {

@@ -66,7 +66,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff")]
+        [AllowAnonymous]
         public IActionResult GetProductById(Guid id)
         {
             try
@@ -189,7 +189,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("ChangeStatus/{id}")]
         //[Authorize(Roles = "Staff")]
-        public IActionResult ChangeStatus([FromRoute] Guid id)
+        public IActionResult ChangeStatus(Guid id)
         {
             try
             {
@@ -222,7 +222,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Delete/{id}")]
         //[Authorize(Roles = "Staff")]
-        public IActionResult DeleteProduct([FromRoute] Guid id)
+        public IActionResult DeleteProduct(Guid id)
         {
             try
             {

@@ -65,7 +65,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        [AllowAnonymous]
+        //[Authorize(Roles = "Admin,Staff,Customer")]
         public IActionResult CreateReport(ReportRequest request)
         {
             try
@@ -93,7 +93,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        [AllowAnonymous]
+        //[Authorize(Roles = "Admin,Staff,Customer")]
         public IActionResult UpdateReport([FromRoute] Guid id, UpdateReportRequest request)
         {
             try
