@@ -125,7 +125,7 @@ namespace BPA.API.Controllers
                 var listByName = _productService.GetAll().Where(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);
                 if (listByName.Any())
                 {
-                    return BadRequest("Product With Email " + request.ProductName + " Already Exist");
+                    return BadRequest("Product With Name " + request.ProductName + " Already Exist");
                 }
 
                 var newProduct = new Product
@@ -162,7 +162,7 @@ namespace BPA.API.Controllers
                 var foundProduct = _productService.GetById(id);
                 if (foundProduct == null || foundProduct.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Account");
+                    return NotFound("Cannot Find Product");
                 }
 
                 var existingProductByName = _productService.GetAll().FirstOrDefault(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);

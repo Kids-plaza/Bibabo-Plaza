@@ -106,7 +106,7 @@ namespace BPA.API.Controllers
                 var foundPost = _postService.GetById(id);
                 if (foundPost == null || foundPost.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Feedback");
+                    return NotFound("Cannot Find Post");
                 }
                 foundPost.Title = request.Title ?? foundPost.Title;
                 foundPost.Content = request.Content ?? foundPost.Content;
