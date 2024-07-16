@@ -70,7 +70,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _orderService.GetAll().Where(x => x.CustomerId == id && x.IsDeleted == false).ToList();
+                var list = _orderService.GetAll().Where(x => x.CustomerId == id && x.IsDeleted == false && x.OrderStatus != OrderStatus.InCart).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -118,7 +118,7 @@ namespace BPA.API.Controllers
                     TotalPrice = request.TotalPrice,
                     TotalQuantity = request.TotalQuantity,
                     CustomerId = request.CustomerId,
-                    OrderStatus = OrderStatus.Pending,
+                    OrderStatus = OrderStatus.InCart,
                     CreatedOn = DateTime.Now,
                     IsDeleted = false,
                 };
@@ -159,6 +159,35 @@ namespace BPA.API.Controllers
             }
         }
 
+        [HttpPut("ConfirmOrder/{id}")]
+        //[Authorize(Roles = "Customer")]
+        public IActionResult ConfirmOrder(Guid id)
+        {
+            try
+            {
+                var foundOrder = _orderService.GetById(id);
+                if (foundOrder == null || foundOrder.IsDeleted == true)
+                {
+                    return NotFound("Cannot Find Order");
+                }
+                switch (foundOrder.OrderStatus)
+                {
+                    case OrderStatus.InCart:
+                        foundOrder.OrderStatus = OrderStatus.Pending;
+                        break;
+                    default:
+                        foundOrder.OrderStatus = foundOrder.OrderStatus;
+                        break;
+                }
+                _orderService.Update(foundOrder);
+                return Ok("Change Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("ChangeOrderStatus/{id}")]
         //[Authorize(Roles = "Staff")]
         public IActionResult ChangeOrderStatus(Guid id)
@@ -168,7 +197,7 @@ namespace BPA.API.Controllers
                 var foundOrder = _orderService.GetById(id);
                 if (foundOrder == null || foundOrder.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Post");
+                    return NotFound("Cannot Find Order");
                 }
                 switch (foundOrder.OrderStatus)
                 {
@@ -183,7 +212,7 @@ namespace BPA.API.Controllers
                         break;
                 }
                 _orderService.Update(foundOrder);
-                return Ok("Delete Successfully");
+                return Ok("Change Successfully");
             }
             catch (Exception ex)
             {
@@ -200,7 +229,7 @@ namespace BPA.API.Controllers
                 var foundOrder = _orderService.GetById(id);
                 if (foundOrder == null || foundOrder.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Post");
+                    return NotFound("Cannot Find Order");
                 }
                 switch (foundOrder.OrderStatus)
                 {
@@ -215,7 +244,7 @@ namespace BPA.API.Controllers
                         break;
                 }
                 _orderService.Update(foundOrder);
-                return Ok("Delete Successfully");
+                return Ok("Cancel Successfully");
             }
             catch (Exception ex)
             {
@@ -232,7 +261,7 @@ namespace BPA.API.Controllers
                 var foundOrder = _orderService.GetById(id);
                 if (foundOrder == null || foundOrder.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Post");
+                    return NotFound("Cannot Find Order");
                 }
                 foundOrder.IsDeleted = true;
                 _orderService.Update(foundOrder);

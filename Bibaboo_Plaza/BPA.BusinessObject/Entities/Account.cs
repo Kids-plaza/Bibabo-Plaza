@@ -37,9 +37,13 @@ namespace BPA.BusinessObject.Entities
         public RoleType Role { get; set; } = RoleType.Customer;
 
         [InverseProperty("Staff")]
-        public virtual ICollection<Post> StaffPosts{ get; set; } = new List<Post>();
+        public ICollection<Post> StaffPosts{ get; set; } = new List<Post>();
 
         [InverseProperty("Customer")]
         public ICollection<Order> CustomerOrders { get; set; } = new List<Order>();
+        [InverseProperty("Customer")]
+        public ICollection<Report> CustomerReports { get; set; } = new List<Report>();
+        [InverseProperty("Customer")]
+        public ICollection<Feedback> CustomerFeedbacks { get; set; } = new List<Feedback>();
     }
 }

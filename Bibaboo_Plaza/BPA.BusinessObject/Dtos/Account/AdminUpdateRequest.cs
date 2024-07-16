@@ -21,7 +21,5 @@ namespace BPA.BusinessObject.Dtos.Account
         public RoleType Role { get; set; }
         [Required]
         public AccountStatus Status { get; set; }
-        [Required]
-        public bool IsDeleted { get; set; }
     }
 }

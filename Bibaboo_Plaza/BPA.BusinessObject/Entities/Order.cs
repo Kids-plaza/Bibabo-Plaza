@@ -21,7 +21,7 @@ namespace BPA.BusinessObject.Entities
 
         [Column("order_status")]
         [EnumDataType(typeof(OrderStatus))]
-        public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
+        public OrderStatus OrderStatus { get; set; } = OrderStatus.InCart;
 
         [Column("customer_id")]
         [ForeignKey("Customer")]

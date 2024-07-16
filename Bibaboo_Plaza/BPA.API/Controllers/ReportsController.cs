@@ -105,7 +105,7 @@ namespace BPA.API.Controllers
                 var foundReport = _reportService.GetById(id);
                 if (foundReport == null || foundReport.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Feedback");
+                    return NotFound("Cannot Find Report");
                 }
                 foundReport.Content = request.Content ?? foundReport.Content;
 

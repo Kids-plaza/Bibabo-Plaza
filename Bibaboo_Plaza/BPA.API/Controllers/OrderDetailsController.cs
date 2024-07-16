@@ -113,7 +113,7 @@ namespace BPA.API.Controllers
 
         [HttpPut("Update/{id}")]
         //[Authorize(Roles = "Customer")]
-        public IActionResult UpdateOrderDetail(Guid id, UpdateOrderDetailRequest request)
+        public IActionResult UpdateOrderDetail(Guid id, OrderDetailRequest request)
         {
             try
             {
@@ -124,11 +124,12 @@ namespace BPA.API.Controllers
                 var foundOrderDetail = _orderDetailService.GetById(id);
                 if (foundOrderDetail == null || foundOrderDetail.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Order");
+                    return NotFound("Cannot Find Order Detail");
                 }
                 foundOrderDetail.Price = request.Price;
                 foundOrderDetail.Quantity = request.Quantity;
                 foundOrderDetail.ProductId = request.ProductId;
+                foundOrderDetail.ProductId = request.OrderId;
 
                 return Ok("Update Successfully");
             }
@@ -147,7 +148,7 @@ namespace BPA.API.Controllers
                 var foundOrderDetail = _orderDetailService.GetById(id);
                 if (foundOrderDetail == null || foundOrderDetail.IsDeleted == true)
                 {
-                    return NotFound("Cannot Find Post");
+                    return NotFound("Cannot Find Order Detail");
                 }
                 foundOrderDetail.IsDeleted = true;
                 _orderDetailService.Update(foundOrderDetail);
