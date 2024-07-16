@@ -108,7 +108,7 @@ namespace BPA.API.Controllers
                 var listByName = _brandService.GetAll().Where(x => x.BrandName!.Equals(request.BrandName) && x.IsDeleted == false);
                 if (listByName.Any())
                 {
-                    return BadRequest("Account With Email " + request.BrandName + " Already Exist");
+                    return BadRequest("Brand With Name " + request.BrandName + " Already Exist");
                 }
 
                 var newBrand = new Brand

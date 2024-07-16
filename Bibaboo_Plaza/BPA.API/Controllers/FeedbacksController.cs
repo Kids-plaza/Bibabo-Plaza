@@ -43,7 +43,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAllByProduct")]
-        //[Authorize(Roles = "Admin,Customer,Staff")]
+        //[Authorize(Roles = "Customer,Staff")]
         public IActionResult GetAllFeedbacksByProductId(Guid id)
         {
             try
@@ -81,7 +81,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer")]
         public IActionResult CreateFeedback(FeedBackRequest request)
         {
             try
@@ -110,7 +110,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer")]
         public IActionResult UpdateFeedBack(Guid id, UpdateFeedbackRequest request)
         {
             try
