@@ -48,7 +48,7 @@ namespace BPA.API.Controllers
                     return Unauthorized("Your Account is Inactived");
                 }
                 var jwt = GenerateJWT(account);
-                return Ok(jwt);
+                return Ok(new { token = jwt});
             }
             catch (Exception ex)
             {
@@ -156,7 +156,7 @@ namespace BPA.API.Controllers
                 {
                     list = listByName;
                 }
-                else 
+                else
                 {
                     list = _accountService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 }
@@ -267,7 +267,7 @@ namespace BPA.API.Controllers
                     if (existingAccountByEmail != null)
                         return BadRequest("Email Is Already Used");
                     foundAccount.Email = request.Email;
-                }  
+                }
                 foundAccount.FullName = request.FullName ?? foundAccount.FullName;
                 foundAccount.Address = request.Address ?? foundAccount.Address;
                 foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
@@ -355,7 +355,7 @@ namespace BPA.API.Controllers
               {
                   new(ClaimTypes.Email, account.Email),
                   new(ClaimTypes.Role, account.Role.ToString()),
-                  new("Id", account.Id.ToString()),
+                  new("userId", account.Id.ToString()),
               },
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials

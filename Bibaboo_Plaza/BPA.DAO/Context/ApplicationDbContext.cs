@@ -32,7 +32,7 @@ namespace BPA.DAO.Context
         #endregion DbSet
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(local);Database=BPADatabase;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=(local);Database=BPADatabase;uid=sa;pwd=1;Trusted_Connection=True;TrustServerCertificate=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
