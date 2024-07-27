@@ -35,7 +35,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _brandService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _brandService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -49,15 +49,15 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetBrandById(Guid id)
         {
             try
             {
                 var brand = _brandService.GetById(id);
-                if (brand == null || brand.IsDeleted == true)
+                if (brand == null || brand.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(brand);
             }
@@ -73,7 +73,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.is_deleted == false).ToList();
                 IList<Brand> list = new List<Brand>();
                 if (!listByName.Any())
                 {
@@ -85,7 +85,7 @@ namespace BPA.API.Controllers
                 }
                 else
                 {
-                    list = _brandService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                    list = _brandService.GetAll().Where(x => x.is_deleted == false).ToList();
                 }
                 return Ok(list);
             }
@@ -96,7 +96,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult CreateBrand(BrandRequest request)
         {
             try
@@ -105,7 +105,7 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Equals(request.BrandName) && x.IsDeleted == false);
+                var listByName = _brandService.GetAll().Where(x => x.BrandName!.Equals(request.BrandName) && x.is_deleted == false);
                 if (listByName.Any())
                 {
                     return BadRequest("Brand With Name " + request.BrandName + " Already Exist");
@@ -117,8 +117,8 @@ namespace BPA.API.Controllers
                     BrandAddress = request.BrandAddress,
                     BrandPhone = request.BrandPhone,
                     Description = request.Description,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _brandService.Add(newBrand);
 
@@ -131,7 +131,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult UpdateBrand(Guid id, BrandRequest request)
         {
             try
@@ -141,12 +141,12 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundBrand = _brandService.GetById(id);
-                if (foundBrand == null || foundBrand.IsDeleted == true)
+                if (foundBrand == null || foundBrand.is_deleted == true)
                 {
                     return NotFound("Cannot Find Brand");
                 }
 
-                var existingBrandByName = _brandService.GetAll().FirstOrDefault(x => x.BrandName == request.BrandName && x.IsDeleted == false);
+                var existingBrandByName = _brandService.GetAll().FirstOrDefault(x => x.BrandName == request.BrandName && x.is_deleted == false);
                 if (request.BrandName != null && !request.BrandName.Equals(foundBrand.BrandName))
                 {
                     if (existingBrandByName != null)
@@ -166,20 +166,20 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult DeleteBrand(Guid id)
         {
             try
             {
                 var foundBrand = _brandService.GetById(id);
-                var hasProduct = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false);
-                if (foundBrand == null || foundBrand.IsDeleted == true)
+                var hasProduct = _productService.GetAll().Where(x => x.BrandId == id && x.is_deleted == false);
+                if (foundBrand == null || foundBrand.is_deleted == true)
                 {
                     return NotFound("Cannot Find Brand");
                 }
                 if (hasProduct.IsNullOrEmpty())
                 {
-                    foundBrand.IsDeleted = true;
+                    foundBrand.is_deleted = true;
                     _brandService.Update(foundBrand);
                     return Ok("Delete Successfully");
                 }

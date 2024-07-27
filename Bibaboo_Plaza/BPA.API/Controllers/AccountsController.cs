@@ -41,9 +41,9 @@ namespace BPA.API.Controllers
                 var account = _accountService.GetAccountByEmailAndPassword(request);
                 if (account == null)
                 {
-                    return Unauthorized("Invalid Email Or Password");
+                    return Unauthorized("Invalid email Or password");
                 }
-                if (account.Status == AccountStatus.Banned)
+                if (account.status == AccountStatus.Banned)
                 {
                     return Unauthorized("Your Account is Inactived");
                 }
@@ -70,23 +70,23 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Confirm password do not match password");
                 }
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
+                var listByEmail = _accountService.GetAll().Where(x => x.email!.Equals(request.Email) && x.is_deleted == false);
                 if (listByEmail.Any())
                 {
-                    return BadRequest("Account With Email " + request.Email + " Already Exist");
+                    return BadRequest("Account With email " + request.Email + " Already Exist");
                 }
 
                 var newAccount = new Account
                 {
-                    Email = request.Email,
-                    Password = request.Password,
-                    FullName = request.FullName,
-                    PhoneNumber = request.PhoneNumber,
-                    Address = request.Address,
-                    Role = RoleType.Customer,
-                    Status = AccountStatus.Active,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    email = request.Email,
+                    password = request.Password,
+                    fullname = request.FullName,
+                    phone_number = request.PhoneNumber,
+                    address = request.Address,
+                    role = RoleType.Customer,
+                    status = AccountStatus.Active,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _accountService.Add(newAccount);
                 return Ok("Sign Up Successfully");
@@ -103,7 +103,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _accountService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _accountService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -123,9 +123,9 @@ namespace BPA.API.Controllers
             try
             {
                 var account = _accountService.GetById(id);
-                if (account == null || account.IsDeleted == true)
+                if (account == null || account.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(account);
             }
@@ -141,8 +141,8 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
-                var listByName = _accountService.GetAll().Where(x => x.FullName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                var listByEmail = _accountService.GetAll().Where(x => x.email!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.is_deleted == false).ToList();
+                var listByName = _accountService.GetAll().Where(x => x.fullname!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.is_deleted == false).ToList();
                 IList<Account> list = new List<Account>();
                 if (!listByEmail.Any() && !listByName.Any())
                 {
@@ -158,7 +158,7 @@ namespace BPA.API.Controllers
                 }
                 else
                 {
-                    list = _accountService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                    list = _accountService.GetAll().Where(x => x.is_deleted == false).ToList();
                 }
                 return Ok(list);
             }
@@ -178,23 +178,23 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                var listByEmail = _accountService.GetAll().Where(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
+                var listByEmail = _accountService.GetAll().Where(x => x.email!.Equals(request.Email) && x.is_deleted == false);
                 if (listByEmail.Any())
                 {
-                    return BadRequest("Account With Email " + request.Email + " Already Exist");
+                    return BadRequest("Account With email " + request.Email + " Already Exist");
                 }
 
                 var newAccount = new Account
                 {
-                    Email = request.Email,
-                    Password = request.Password,
-                    FullName = request.FullName,
-                    PhoneNumber = request.PhoneNumber,
-                    Address = request.Address,
-                    Role = request.Role,
-                    Status = AccountStatus.Active,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    email = request.Email,
+                    password = request.Password,
+                    fullname = request.FullName,
+                    phone_number = request.PhoneNumber,
+                    address = request.Address,
+                    role = request.Role,
+                    status = AccountStatus.Active,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _accountService.Add(newAccount);
 
@@ -207,7 +207,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("SelfUpdate/{id}")]
-        //[Authorize(Roles = "Admin,Customer,Staff")]
+        //[Authorize(Roles = "Admin,Customer,staff")]
         public IActionResult UpdateAccount(Guid id, UpdateAccountRequest request)
         {
             try
@@ -217,23 +217,23 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null || foundAccount.IsDeleted == true)
+                if (foundAccount == null || foundAccount.is_deleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
 
-                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email!.Equals(request.Email) && x.IsDeleted == false);
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.email!.Equals(request.Email) && x.is_deleted == false);
 
-                if (request.Email != null && !request.Email.Equals(foundAccount.Email))
+                if (request.Email != null && !request.Email.Equals(foundAccount.email))
                 {
                     if (existingAccountByEmail != null)
-                        return BadRequest("Email Is Already Used");
-                    foundAccount.Email = request.Email;
+                        return BadRequest("email Is Already Used");
+                    foundAccount.email = request.Email;
                 }
-                foundAccount.FullName = request.FullName ?? foundAccount.FullName;
-                foundAccount.Address = request.Address ?? foundAccount.Address;
-                foundAccount.Password = request.Password ?? foundAccount.Password;
-                foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
+                foundAccount.fullname = request.FullName ?? foundAccount.fullname;
+                foundAccount.address = request.Address ?? foundAccount.address;
+                foundAccount.password = request.Password ?? foundAccount.password;
+                foundAccount.phone_number = request.PhoneNumber ?? foundAccount.phone_number;
 
                 _accountService.Update(foundAccount);
 
@@ -256,22 +256,22 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null || foundAccount.IsDeleted == true)
+                if (foundAccount == null || foundAccount.is_deleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
 
-                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.Email == request.Email && x.IsDeleted == false);
-                if (request.Email != null && !request.Email.Equals(foundAccount.Email))
+                var existingAccountByEmail = _accountService.GetAll().FirstOrDefault(x => x.email == request.Email && x.is_deleted == false);
+                if (request.Email != null && !request.Email.Equals(foundAccount.email))
                 {
                     if (existingAccountByEmail != null)
-                        return BadRequest("Email Is Already Used");
-                    foundAccount.Email = request.Email;
+                        return BadRequest("email Is Already Used");
+                    foundAccount.email = request.Email;
                 }
-                foundAccount.FullName = request.FullName ?? foundAccount.FullName;
-                foundAccount.Address = request.Address ?? foundAccount.Address;
-                foundAccount.PhoneNumber = request.PhoneNumber ?? foundAccount.PhoneNumber;
-                foundAccount.Role = request.Role;
+                foundAccount.fullname = request.FullName ?? foundAccount.fullname;
+                foundAccount.address = request.Address ?? foundAccount.address;
+                foundAccount.phone_number = request.PhoneNumber ?? foundAccount.phone_number;
+                foundAccount.role = request.Role;
                 _accountService.Update(foundAccount);
 
                 return Ok("Update Successfully");
@@ -289,24 +289,24 @@ namespace BPA.API.Controllers
             try
             {
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null || foundAccount.IsDeleted == true)
+                if (foundAccount == null || foundAccount.is_deleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
-                if (foundAccount.Role == RoleType.Admin)
+                if (foundAccount.role == RoleType.Admin)
                 {
-                    return BadRequest("User With Admin Role Cannot Be Inactived");
+                    return BadRequest("User With Admin role Cannot Be Inactived");
                 }
-                switch (foundAccount.Status)
+                switch (foundAccount.status)
                 {
                     case AccountStatus.Active:
-                        foundAccount.Status = AccountStatus.Banned;
+                        foundAccount.status = AccountStatus.Banned;
                         break;
                     case AccountStatus.Banned:
-                        foundAccount.Status = AccountStatus.Active;
+                        foundAccount.status = AccountStatus.Active;
                         break;
                     default:
-                        foundAccount.Status = AccountStatus.Active;
+                        foundAccount.status = AccountStatus.Active;
                         break;
                 }
                 _accountService.Update(foundAccount);
@@ -326,15 +326,15 @@ namespace BPA.API.Controllers
             try
             {
                 var foundAccount = _accountService.GetById(id);
-                if (foundAccount == null || foundAccount.IsDeleted == true)
+                if (foundAccount == null || foundAccount.is_deleted == true)
                 {
                     return NotFound("Cannot Find Account");
                 }
-                if (foundAccount.Role == RoleType.Admin)
+                if (foundAccount.role == RoleType.Admin)
                 {
-                    return BadRequest("User With Admin Role Cannot Be Deleted");
+                    return BadRequest("User With Admin role Cannot Be Deleted");
                 }
-                foundAccount.IsDeleted = true;
+                foundAccount.is_deleted = true;
                 _accountService.Update(foundAccount);
                 return Ok("Delete Successfully");
             }
@@ -353,9 +353,9 @@ namespace BPA.API.Controllers
               _config["Jwt:Audience"],
               new Claim[]
               {
-                  new(ClaimTypes.Email, account.Email),
-                  new(ClaimTypes.Role, account.Role.ToString()),
-                  new("userId", account.Id.ToString()),
+                  new(ClaimTypes.Email, account.email),
+                  new(ClaimTypes.Role, account.role.ToString()),
+                  new("userId", account.id.ToString()),
               },
               expires: DateTime.Now.AddMinutes(120),
               signingCredentials: credentials

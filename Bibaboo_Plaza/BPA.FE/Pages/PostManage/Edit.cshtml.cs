@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,66 +14,49 @@ namespace BPA.FE.Pages.PostManage
 {
     public class EditModel : PageModel
     {
-        private readonly Test.Models.BPADatabaseContext _context;
-
-        public EditModel(Test.Models.BPADatabaseContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
         public Post Post { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (id == null)
+            //var role = HttpContext.Session.GetString("Role");
+            //if (role != "1") return Forbid();
+            var getURL = $"{Common.BaseURL}/api/Posts/GetById?id={id}";
+            var response = await Common.SendGetRequest(getURL, HttpContext.Session.GetString("accessToken"));
+            var resJson = JsonNode.Parse(await response.Content.ReadAsStringAsync());
+            try
             {
-                return NotFound();
+                Post = JsonSerializer.Deserialize<Post>(resJson["value"]) ?? new Post();
+                Account account = await getAccountAsync(Post.staff_id);
+                Post.staff = account;
+                return Page();
             }
-
-            var post =  await _context.Posts.FirstOrDefaultAsync(m => m.id == id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-            Post = post;
-           ViewData["staff_id"] = new SelectList(_context.Accounts, "id", "address");
-            return Page();
-        }
-
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
+            catch (Exception ex)
             {
                 return Page();
             }
 
-            _context.Attach(Post).State = EntityState.Modified;
+            //var getClub = $"{Common.BaseURL}/api/FootballClub";
+            //var clubs = await (await Common.SendGetRequest(getClub, HttpContext.Session.GetString("accessToken"))).Content.ReadFromJsonAsync<List<FootballClub>>();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PostExists(Post.id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            //ViewData["PostID"] = new SelectList(clubs, "FootballClubID", "ClubName");
 
-            return RedirectToPage("./Index");
         }
 
-        private bool PostExists(Guid id)
+        public async Task<Account> getAccountAsync(Guid Id)
         {
-            return _context.Posts.Any(e => e.id == id);
+            var getAccountUrl = $"{Common.BaseURL}/api/Accounts/GetById?id={Id}";
+            var response = await Common.SendGetRequest(getAccountUrl, HttpContext.Session.GetString("accessToken"));
+            var resJson = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Account>(resJson);
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var updateURL = $"{Common.BaseURL}/api/Posts/Update/{Post.id}";
+            var response = await Common.SendRequestWithBody(Post, updateURL, HttpContext.Session.GetString("accessToken"), "Put");
+            return RedirectToPage("./Index");
         }
     }
 }

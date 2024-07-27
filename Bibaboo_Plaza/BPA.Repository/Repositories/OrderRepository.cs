@@ -21,6 +21,6 @@ namespace BPA.Repository.Repositories
 
         public void Update(Order order) => OrderDAO.Instance.Update(order);
 
-        public void Update2(Order order) => OrderDAO.Instance.Update2(order, GetById(order.Id));
+        public void Update2(Order order) => OrderDAO.Instance.Update2(order, GetById(order.id));
     }
 }

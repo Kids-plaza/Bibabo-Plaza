@@ -52,9 +52,9 @@ namespace BPA.API.Controllers
             try
             {
                 var report = _reportService.GetById(id);
-                if (report == null || report.IsDeleted == true )
+                if (report == null || report.is_deleted == true )
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(report);
             }
@@ -79,8 +79,8 @@ namespace BPA.API.Controllers
                 {
                     Content = request.Content,
                     CustomerId = request.CustomerId,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _reportService.Add(newReport);
 
@@ -103,7 +103,7 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundReport = _reportService.GetById(id);
-                if (foundReport == null || foundReport.IsDeleted == true)
+                if (foundReport == null || foundReport.is_deleted == true)
                 {
                     return NotFound("Cannot Find Report");
                 }
@@ -124,11 +124,11 @@ namespace BPA.API.Controllers
             try
             {
                 var foundReport = _reportService.GetById(id);
-                if (foundReport == null || foundReport.IsDeleted == true)
+                if (foundReport == null || foundReport.is_deleted == true)
                 {
                     return NotFound("Cannot Find Report");
                 }
-                foundReport.IsDeleted = true;
+                foundReport.is_deleted = true;
                 _reportService.Update(foundReport);
                 return Ok("Delete Successfully");
             }

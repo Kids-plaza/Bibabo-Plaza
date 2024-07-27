@@ -25,12 +25,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetAllOrderDetails()
         {
             try
             {
-                var list = _orderDetailService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _orderDetailService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -44,12 +44,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAllByOrderId")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult GetAllOrderDetailsByOrderId(Guid id)
         {
             try
             {
-                var list = _orderDetailService.GetAll().Where(x => x.OrderId == id && x.IsDeleted == false).ToList();
+                var list = _orderDetailService.GetAll().Where(x => x.OrderId == id && x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -63,15 +63,15 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetOrderDetailById(Guid id)
         {
             try
             {
                 var orderDetail = _orderDetailService.GetById(id);
-                if (orderDetail == null || orderDetail.IsDeleted == true)
+                if (orderDetail == null || orderDetail.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(orderDetail);
             }
@@ -98,8 +98,8 @@ namespace BPA.API.Controllers
                     Quantity = request.Quantity,
                     OrderId = request.OrderId,
                     ProductId = request.ProductId,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _orderDetailService.Add(newOrderDetail);
 
@@ -122,7 +122,7 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundOrderDetail = _orderDetailService.GetById(id);
-                if (foundOrderDetail == null || foundOrderDetail.IsDeleted == true)
+                if (foundOrderDetail == null || foundOrderDetail.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order Detail");
                 }
@@ -146,11 +146,11 @@ namespace BPA.API.Controllers
             try
             {
                 var foundOrderDetail = _orderDetailService.GetById(id);
-                if (foundOrderDetail == null || foundOrderDetail.IsDeleted == true)
+                if (foundOrderDetail == null || foundOrderDetail.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order Detail");
                 }
-                foundOrderDetail.IsDeleted = true;
+                foundOrderDetail.is_deleted = true;
                 _orderDetailService.Update(foundOrderDetail);
                 return Ok("Delete Successfully");
             }

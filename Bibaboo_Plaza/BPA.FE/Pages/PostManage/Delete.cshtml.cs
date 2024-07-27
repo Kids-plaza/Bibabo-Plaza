@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,51 +13,44 @@ namespace BPA.FE.Pages.PostManage
 {
     public class DeleteModel : PageModel
     {
-        private readonly Test.Models.BPADatabaseContext _context;
-
-        public DeleteModel(Test.Models.BPADatabaseContext context)
-        {
-            _context = context;
-        }
 
         [BindProperty]
         public Post Post { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(string id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //var role = HttpContext.Session.GetString("role");
+            //if (role != "1" && role != "2") return Forbid();
 
-            var post = await _context.Posts.FirstOrDefaultAsync(m => m.id == id);
-
-            if (post == null)
+            var getURL = $"{Common.BaseURL}/api/Posts/GetById?id={id}";
+            var response = await Common.SendGetRequest(getURL, HttpContext.Session.GetString("accessToken"));
+            var resJson = JsonNode.Parse(await response.Content.ReadAsStringAsync());
+            try
             {
-                return NotFound();
+                Post = JsonSerializer.Deserialize<Post>(resJson["value"]) ?? new Post();
+                Account account = await getAccountAsync(Post.staff_id);
+                Post.staff = account;
+                return Page();
             }
-            else
+            catch (Exception ex)
             {
-                Post = post;
+                return Page();
             }
-            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<Account> getAccountAsync(Guid Id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var getAccountUrl = $"{Common.BaseURL}/api/Accounts/GetById?id={Id}";
+            var response = await Common.SendGetRequest(getAccountUrl, HttpContext.Session.GetString("accessToken"));
+            var resJson = await response.Content.ReadAsStringAsync();
 
-            var post = await _context.Posts.FindAsync(id);
-            if (post != null)
-            {
-                Post = post;
-                _context.Posts.Remove(Post);
-                await _context.SaveChangesAsync();
-            }
+            return JsonSerializer.Deserialize<Account>(resJson);
+        }
 
+        public async Task<IActionResult> OnPostAsync(string id)
+        {
+            var deleteURL = $"{Common.BaseURL}/api/Posts/Delete/{Post.id}";
+            await Common.SendRequestWithBody<object>(null, deleteURL, HttpContext.Session.GetString("accessToken"), "Delete");
             return RedirectToPage("./Index");
         }
     }

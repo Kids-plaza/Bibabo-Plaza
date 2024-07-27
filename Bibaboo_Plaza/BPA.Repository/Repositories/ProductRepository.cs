@@ -15,6 +15,6 @@ namespace BPA.Repository.Repositories
         public Product GetById(Guid id) => ProductDAO.Instance.GetById(id);
 
         public void Update(Product product) => ProductDAO.Instance.Update(product);
-        public void Update2(Product product) => ProductDAO.Instance.Update2(product, GetById(product.Id));
+        public void Update2(Product product) => ProductDAO.Instance.Update2(product, GetById(product.id));
     }
 }

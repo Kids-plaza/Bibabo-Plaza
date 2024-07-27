@@ -2,7 +2,7 @@
 @model BPA.FE.Pages.PostManage.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["title"] = "Create";
 }
 
 <h1>Create</h1>
@@ -14,11 +14,6 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Post.id" class="control-label"></label>
-                <input asp-for="Post.id" class="form-control" />
-                <span asp-validation-for="Post.id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Post.title" class="control-label"></label>
                 <input asp-for="Post.title" class="form-control" />
                 <span asp-validation-for="Post.title" class="text-danger"></span>
@@ -27,20 +22,6 @@
                 <label asp-for="Post.content" class="control-label"></label>
                 <input asp-for="Post.content" class="form-control" />
                 <span asp-validation-for="Post.content" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Post.staff_id" class="control-label"></label>
-                <select asp-for="Post.staff_id" class ="form-control" asp-items="ViewBag.staff_id"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Post.created_on" class="control-label"></label>
-                <input asp-for="Post.created_on" class="form-control" />
-                <span asp-validation-for="Post.created_on" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Post.is_deleted" /> @Html.DisplayNameFor(model => model.Post.is_deleted)
-                </label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

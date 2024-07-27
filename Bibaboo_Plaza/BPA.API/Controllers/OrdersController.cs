@@ -27,12 +27,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetAllOrders()
         {
             try
             {
-                var list = _orderService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _orderService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -46,12 +46,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAllByStatus")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult GetAllOrdersByStatus(string input)
         {
             try
             {
-                var list = _orderService.GetAll().Where(x => x.OrderStatus.ToString() == input && x.IsDeleted == false).ToList();
+                var list = _orderService.GetAll().Where(x => x.OrderStatus.ToString() == input && x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -65,12 +65,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAllByCustomerId")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult GetAllOrdersByCustomerId(Guid id)
         {
             try
             {
-                var list = _orderService.GetAll().Where(x => x.CustomerId == id && x.IsDeleted == false && x.OrderStatus != OrderStatus.InCart).ToList();
+                var list = _orderService.GetAll().Where(x => x.CustomerId == id && x.is_deleted == false && x.OrderStatus != OrderStatus.InCart).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -84,15 +84,15 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff,Customer")]
+        //[Authorize(Roles = "staff,Customer")]
         public IActionResult GetOrderById(Guid id)
         {
             try
             {
                 var order = _orderService.GetById(id);
-                if (order == null || order.IsDeleted == true)
+                if (order == null || order.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(order);
             }
@@ -119,8 +119,8 @@ namespace BPA.API.Controllers
                     TotalQuantity = request.TotalQuantity,
                     CustomerId = request.CustomerId,
                     OrderStatus = OrderStatus.InCart,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _orderService.Add(newOrder);
 
@@ -133,7 +133,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult UpdateOrder(Guid id, OrderRequest request)
         {
             try
@@ -143,7 +143,7 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundOrder = _orderService.GetById(id);
-                if (foundOrder == null || foundOrder.IsDeleted == true)
+                if (foundOrder == null || foundOrder.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order");
                 }
@@ -166,7 +166,7 @@ namespace BPA.API.Controllers
             try
             {
                 var foundOrder = _orderService.GetById(id);
-                if (foundOrder == null || foundOrder.IsDeleted == true)
+                if (foundOrder == null || foundOrder.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order");
                 }
@@ -189,13 +189,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("ChangeOrderStatus/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult ChangeOrderStatus(Guid id)
         {
             try
             {
                 var foundOrder = _orderService.GetById(id);
-                if (foundOrder == null || foundOrder.IsDeleted == true)
+                if (foundOrder == null || foundOrder.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order");
                 }
@@ -221,13 +221,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("CancelOrder/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult CancelOrder(Guid id)
         {
             try
             {
                 var foundOrder = _orderService.GetById(id);
-                if (foundOrder == null || foundOrder.IsDeleted == true)
+                if (foundOrder == null || foundOrder.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order");
                 }
@@ -253,17 +253,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult DeleteOrder(Guid id)
         {
             try
             {
                 var foundOrder = _orderService.GetById(id);
-                if (foundOrder == null || foundOrder.IsDeleted == true)
+                if (foundOrder == null || foundOrder.is_deleted == true)
                 {
                     return NotFound("Cannot Find Order");
                 }
-                foundOrder.IsDeleted = true;
+                foundOrder.is_deleted = true;
                 _orderService.Update(foundOrder);
                 return Ok("Delete Successfully");
             }

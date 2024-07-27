@@ -42,7 +42,7 @@ namespace BPA.FE.Pages
                     var jsonToken = handler.ReadToken(accessToken);
                     var tokenS = jsonToken as JwtSecurityToken;
                     var role = tokenS.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role).Value;
-                    HttpContext.Session.SetString("Role", role);
+                    HttpContext.Session.SetString("role", role);
                     return RedirectToPage("/PostManage/Index");
                 }
                 ViewData["ErrorMessage"] = "You do not have permission to do this function!";

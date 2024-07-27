@@ -28,7 +28,7 @@ namespace BPA.Service.Services
             try
             {
                 return _accountRepository.GetAll()
-                    .FirstOrDefault(x => x.Email!.Equals(accountLogin.Email) && x.Password!.Equals(accountLogin.Password));
+                    .FirstOrDefault(x => x.email!.Equals(accountLogin.Email) && x.password!.Equals(accountLogin.Password));
             }
             catch (Exception)
             {
@@ -37,7 +37,7 @@ namespace BPA.Service.Services
         }
         public IEnumerable<Account> SearchByName(string name)
         {
-            return _accountRepository.GetAll().Where(x => x.FullName!.Contains(name, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+            return _accountRepository.GetAll().Where(x => x.fullname!.Contains(name, StringComparison.OrdinalIgnoreCase) && x.is_deleted == false).ToList();
         }
 
         public IEnumerable<Account> GetAll()

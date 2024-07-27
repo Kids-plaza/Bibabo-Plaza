@@ -24,12 +24,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetAllFeedbacks()
         {
             try
             {
-                var list = _feedbackService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _feedbackService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -43,12 +43,12 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetAllByProduct")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult GetAllFeedbacksByProductId(Guid id)
         {
             try
             {
-                var list = _feedbackService.GetAll().Where(x => x.ProductId == id && x.IsDeleted == false).ToList();
+                var list = _feedbackService.GetAll().Where(x => x.ProductId == id && x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -62,15 +62,15 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetFeedbackById(Guid id)
         {
             try
             {
                 var feedback = _feedbackService.GetById(id);
-                if (feedback == null || feedback.IsDeleted == true)
+                if (feedback == null || feedback.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(feedback);
             }
@@ -96,8 +96,8 @@ namespace BPA.API.Controllers
                     Content = request.Content,
                     ProductId = request.ProductId,
                     CustomerId = request.CustomerId,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _feedbackService.Add(newFeedback);
 
@@ -120,7 +120,7 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundFeedback = _feedbackService.GetById(id);
-                if (foundFeedback == null || foundFeedback.IsDeleted == true)
+                if (foundFeedback == null || foundFeedback.is_deleted == true)
                 {
                     return NotFound("Cannot Find Feedback");
                 }
@@ -135,17 +135,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Customer,Staff")]
+        //[Authorize(Roles = "Customer,staff")]
         public IActionResult DeleteFeedback(Guid id)
         {
             try
             {
                 var foundFeedback = _feedbackService.GetById(id);
-                if (foundFeedback == null || foundFeedback.IsDeleted == true)
+                if (foundFeedback == null || foundFeedback.is_deleted == true)
                 {
                     return NotFound("Cannot Find FeedBack");
                 }
-                foundFeedback.IsDeleted = true;
+                foundFeedback.is_deleted = true;
                 _feedbackService.Update(foundFeedback);
                 return Ok("Delete Successfully");
             }

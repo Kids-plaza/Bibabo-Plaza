@@ -28,60 +28,60 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Account", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Address")
+                    b.Property<string>("address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("email");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("fullname")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("fullname");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("phone_number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("phone_number");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("role")
                         .HasColumnType("int")
                         .HasColumnName("role");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("status")
                         .HasColumnType("int")
                         .HasColumnName("status");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.ToTable("Account", "BPA");
                 });
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Brand", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
@@ -101,7 +101,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("brand_phone");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
@@ -110,28 +110,28 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.ToTable("Brand", "BPA");
                 });
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Feedback", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Content")
+                    b.Property<string>("content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
@@ -139,7 +139,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("customer_id");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
@@ -147,7 +147,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("CustomerId");
 
@@ -158,12 +158,12 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Order", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
@@ -171,7 +171,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("customer_id");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
@@ -187,7 +187,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("int")
                         .HasColumnName("total_quantity");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("CustomerId");
 
@@ -196,16 +196,16 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.OrderDetail", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
@@ -225,7 +225,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("OrderId");
 
@@ -236,43 +236,43 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Content")
+                    b.Property<string>("content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<Guid>("StaffId")
+                    b.Property<Guid>("staff_id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("staff_id");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("title");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
-                    b.HasIndex("StaffId");
+                    b.HasIndex("staff_id");
 
                     b.ToTable("Post", "BPA");
                 });
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
@@ -281,7 +281,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("brand_id");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
@@ -295,7 +295,7 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("img_url");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
@@ -312,11 +312,11 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("int")
                         .HasColumnName("quantity");
 
-                    b.Property<int>("Status")
+                    b.Property<int>("status")
                         .HasColumnType("int")
                         .HasColumnName("status");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("BrandId");
 
@@ -325,17 +325,17 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Report", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Content")
+                    b.Property<string>("content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("content");
 
-                    b.Property<DateTime>("CreatedOn")
+                    b.Property<DateTime>("created_on")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_on");
 
@@ -343,11 +343,11 @@ namespace BPA.DAO.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("customer_id");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("is_delete")
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("CustomerId");
 
@@ -405,13 +405,13 @@ namespace BPA.DAO.Migrations
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Post", b =>
                 {
-                    b.HasOne("BPA.BusinessObject.Entities.Account", "Staff")
+                    b.HasOne("BPA.BusinessObject.Entities.Account", "staff")
                         .WithMany("StaffPosts")
-                        .HasForeignKey("StaffId")
+                        .HasForeignKey("staff_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Staff");
+                    b.Navigation("staff");
                 });
 
             modelBuilder.Entity("BPA.BusinessObject.Entities.Product", b =>

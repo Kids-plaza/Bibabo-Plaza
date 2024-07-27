@@ -32,7 +32,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _postService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _postService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -46,17 +46,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpGet("GetById")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult GetPostById(Guid id)
         {
             try
             {
                 var post = _postService.GetById(id);
-                if (post == null || post.IsDeleted == true)
+                if (post == null || post.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
-                return Ok(post);
+                return Ok(new { value = post });
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult CreatePost(PostRequest request)
         {
             try
@@ -77,11 +77,11 @@ namespace BPA.API.Controllers
 
                 var newPost = new Post
                 {
-                    Title = request.Title,
-                    Content = request.Content,
-                    StaffId = request.StaffId,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    title = request.Title,
+                    content = request.Content,
+                    staff_id = request.StaffId,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _postService.Add(newPost);
 
@@ -94,7 +94,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult UpdatePost(Guid id, UpdatePostRequest request)
         {
             try
@@ -104,12 +104,12 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundPost = _postService.GetById(id);
-                if (foundPost == null || foundPost.IsDeleted == true)
+                if (foundPost == null || foundPost.is_deleted == true)
                 {
                     return NotFound("Cannot Find Post");
                 }
-                foundPost.Title = request.Title ?? foundPost.Title;
-                foundPost.Content = request.Content ?? foundPost.Content;
+                foundPost.title = request.Title ?? foundPost.title;
+                foundPost.content = request.Content ?? foundPost.content;
 
                 return Ok("Update Successfully");
             }
@@ -120,17 +120,17 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult DeletePost(Guid id)
         {
             try
             {
                 var foundPost = _postService.GetById(id);
-                if (foundPost == null || foundPost.IsDeleted == true)
+                if (foundPost == null || foundPost.is_deleted == true)
                 {
                     return NotFound("Cannot Find Post");
                 }
-                foundPost.IsDeleted = true;
+                foundPost.is_deleted = true;
                 _postService.Update(foundPost);
                 return Ok("Delete Successfully");
             }

@@ -13,12 +13,12 @@ namespace BPA.BusinessObject.Entities
     public class Post : BaseEntity
     {
         [Column("title")]
-        public string Title { get; set; } = string.Empty;
+        public string title { get; set; } = string.Empty;
         [Column("content")]
-        public string Content { get; set; } = string.Empty;
+        public string content { get; set; } = string.Empty;
         [Column("staff_id")]
-        [ForeignKey("Staff")]
-        public Guid StaffId { get; set; }
-        public virtual Account Staff { get; set; } = null!;
+        [ForeignKey("staff")]
+        public Guid staff_id { get; set; }
+        public virtual Account staff { get; set; } = null!;
     }
 }

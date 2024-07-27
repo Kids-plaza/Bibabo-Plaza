@@ -33,7 +33,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _productService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                var list = _productService.GetAll().Where(x => x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -52,7 +52,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var list = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false).ToList();
+                var list = _productService.GetAll().Where(x => x.BrandId == id && x.is_deleted == false).ToList();
                 if (!list.Any())
                 {
                     return NotFound("No Data");
@@ -72,9 +72,9 @@ namespace BPA.API.Controllers
             try
             {
                 var product = _productService.GetById(id);
-                if (product == null || product.IsDeleted == true)
+                if (product == null || product.is_deleted == true)
                 {
-                    return NotFound("Cannot Find Id");
+                    return NotFound("Cannot Find id");
                 }
                 return Ok(product);
             }
@@ -90,7 +90,7 @@ namespace BPA.API.Controllers
         {
             try
             {
-                var listByName = _productService.GetAll().Where(x => x.ProductName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.IsDeleted == false).ToList();
+                var listByName = _productService.GetAll().Where(x => x.ProductName!.Contains(input, StringComparison.OrdinalIgnoreCase) && x.is_deleted == false).ToList();
                 IList<Product> list = new List<Product>();
                 if (!listByName.Any())
                 {
@@ -102,7 +102,7 @@ namespace BPA.API.Controllers
                 }
                 else
                 {
-                    list = _productService.GetAll().Where(x => x.IsDeleted == false).ToList();
+                    list = _productService.GetAll().Where(x => x.is_deleted == false).ToList();
                 }
                 return Ok(list);
             }
@@ -113,7 +113,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPost("Create")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult CreateProduct(ProductRequest request)
         {
             try
@@ -122,7 +122,7 @@ namespace BPA.API.Controllers
                 {
                     return BadRequest("Invalid Input");
                 }
-                var listByName = _productService.GetAll().Where(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);
+                var listByName = _productService.GetAll().Where(x => x.ProductName!.Equals(request.ProductName) && x.is_deleted == false);
                 if (listByName.Any())
                 {
                     return BadRequest("Product With Name " + request.ProductName + " Already Exist");
@@ -136,8 +136,8 @@ namespace BPA.API.Controllers
                     Description = request.Description,
                     BrandId = request.BrandId,
                     Status = ProductStatus.InStock,
-                    CreatedOn = DateTime.Now,
-                    IsDeleted = false,
+                    created_on = DateTime.Now,
+                    is_deleted = false,
                 };
                 _productService.Add(newProduct);
 
@@ -150,7 +150,7 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Update/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult UpdateProduct([FromRoute] Guid id, ProductRequest request)
         {
             try
@@ -160,12 +160,12 @@ namespace BPA.API.Controllers
                     return BadRequest("Invalid Input");
                 }
                 var foundProduct = _productService.GetById(id);
-                if (foundProduct == null || foundProduct.IsDeleted == true)
+                if (foundProduct == null || foundProduct.is_deleted == true)
                 {
                     return NotFound("Cannot Find Product");
                 }
 
-                var existingProductByName = _productService.GetAll().FirstOrDefault(x => x.ProductName!.Equals(request.ProductName) && x.IsDeleted == false);
+                var existingProductByName = _productService.GetAll().FirstOrDefault(x => x.ProductName!.Equals(request.ProductName) && x.is_deleted == false);
 
                 if (request.ProductName != null && !request.ProductName.Equals(foundProduct.ProductName))
                 {
@@ -188,13 +188,13 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("ChangeStatus/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult ChangeStatus(Guid id)
         {
             try
             {
                 var foundProduct = _productService.GetById(id);
-                if (foundProduct == null || foundProduct.IsDeleted == true)
+                if (foundProduct == null || foundProduct.is_deleted == true)
                 {
                     return NotFound("Cannot Find Product");
                 }
@@ -221,20 +221,20 @@ namespace BPA.API.Controllers
         }
 
         [HttpPut("Delete/{id}")]
-        //[Authorize(Roles = "Staff")]
+        //[Authorize(Roles = "staff")]
         public IActionResult DeleteProduct(Guid id)
         {
             try
             {
                 var foundProduct = _productService.GetById(id);
-                //var hasOrder = _productService.GetAll().Where(x => x.BrandId == id && x.IsDeleted == false);
-                if (foundProduct == null || foundProduct.IsDeleted == true)
+                //var hasOrder = _productService.GetAll().Where(x => x.BrandId == id && x.is_deleted == false);
+                if (foundProduct == null || foundProduct.is_deleted == true)
                 {
                     return NotFound("Cannot Find Product");
                 }
                 //if (hasProduct.IsNullOrEmpty())
                 //{
-                foundProduct.IsDeleted = true;
+                foundProduct.is_deleted = true;
                 _productService.Update(foundProduct);
                 return Ok("Delete Successfully");
                 //}

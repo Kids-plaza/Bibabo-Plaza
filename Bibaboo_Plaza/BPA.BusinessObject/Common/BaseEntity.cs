@@ -7,10 +7,10 @@ namespace BPA.BusinessObject.Common
     {
         [Key]
         [Column("id")]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid id { get; set; } = Guid.NewGuid();
         [Column("created_on")]
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public DateTime created_on { get; set; } = DateTime.Now;
         [Column("is_deleted")]
-        public bool IsDeleted { get; set; } = false;
+        public bool is_deleted { get; set; } = false;
     }
 }

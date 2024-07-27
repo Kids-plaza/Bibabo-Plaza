@@ -40,7 +40,7 @@ namespace BPA.Service.Services
 
         public IEnumerable<Post> SearchByTitle(string name)
         {
-            return _postRepository.GetAll().Where(x => x.Title!.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            return _postRepository.GetAll().Where(x => x.title!.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public void Update(Post post)

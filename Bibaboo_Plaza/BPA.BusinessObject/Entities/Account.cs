@@ -14,29 +14,29 @@ namespace BPA.BusinessObject.Entities
     public class Account : BaseEntity
     {
         [Column("email")]
-        public string Email { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
 
         [Column("password")]
-        public string Password { get; set; } = string.Empty;
+        public string password { get; set; } = string.Empty;
 
         [Column("fullname")]
-        public string FullName { get; set; } = string.Empty;
+        public string fullname { get; set; } = string.Empty;
 
         [Column("phone_number")]
-        public string PhoneNumber { get; set; } = string.Empty;
+        public string phone_number { get; set; } = string.Empty;
 
         [Column("address")]
-        public string Address { get; set; } = string.Empty;
+        public string address { get; set; } = string.Empty;
 
         [Column("status")]
         [EnumDataType(typeof(AccountStatus))]
-        public AccountStatus Status { get; set; } = AccountStatus.Active;
+        public AccountStatus status { get; set; } = AccountStatus.Active;
 
         [Column("role")]
         [EnumDataType(typeof(RoleType))]
-        public RoleType Role { get; set; } = RoleType.Customer;
+        public RoleType role { get; set; } = RoleType.Customer;
 
-        [InverseProperty("Staff")]
+        [InverseProperty("staff")]
         public ICollection<Post> StaffPosts{ get; set; } = new List<Post>();
 
         [InverseProperty("Customer")]

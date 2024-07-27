@@ -16,6 +16,6 @@ namespace BPA.Repository.Repositories
         public Account? GetById(Guid id) => AccountDAO.Instance.GetById(id);
 
         public void Update(Account account) => AccountDAO.Instance.Update(account);
-        public void Update2(Account account) => AccountDAO.Instance.Update2(account, GetById(account.Id));
+        public void Update2(Account account) => AccountDAO.Instance.Update2(account, GetById(account.id));
     }
 }

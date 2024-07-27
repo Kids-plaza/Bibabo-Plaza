@@ -1,42 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using BPA.BusinessObject.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using Test.Models;
 
 namespace BPA.FE.Pages.PostManage
 {
     public class DetailsModel : PageModel
     {
-        private readonly Test.Models.BPADatabaseContext _context;
-
-        public DetailsModel(Test.Models.BPADatabaseContext context)
-        {
-            _context = context;
-        }
-
         public Post Post { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(Guid? Id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //var role = HttpContext.Session.GetString("role");
+            //if (role != "1" && role != "2") return Forbid();
 
-            var post = await _context.Posts.FirstOrDefaultAsync(m => m.id == id);
-            if (post == null)
+            var getURL = $"{Common.BaseURL}/api/Posts/GetById?id={Id}";
+            var response = await Common.SendGetRequest(getURL, HttpContext.Session.GetString("accessToken"));
+            var resJson = JsonNode.Parse(await response.Content.ReadAsStringAsync());
+            try
             {
-                return NotFound();
+                Post = JsonSerializer.Deserialize<Post>(resJson["value"]) ?? new Post();
+                Account account = await getAccountAsync(Post.staff_id);
+                Post.staff = account;
+                return Page();
             }
-            else
+            catch (Exception ex)
             {
-                Post = post;
+                return Page();
             }
-            return Page();
+        }
+
+        public async Task<Account> getAccountAsync(Guid Id)
+        {
+            var getAccountUrl = $"{Common.BaseURL}/api/Accounts/GetById?id={Id}";
+            var response = await Common.SendGetRequest(getAccountUrl, HttpContext.Session.GetString("accessToken"));
+            var resJson = await response.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<Account>(resJson);
         }
     }
 }
