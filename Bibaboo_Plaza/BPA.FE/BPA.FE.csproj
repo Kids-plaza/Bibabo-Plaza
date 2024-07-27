@@ -6,16 +6,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Folder Include="Pages\ReportManage\" />
-		<Folder Include="Pages\FeedbackManage\" />
-		<Folder Include="Pages\ProductManage\" />
-		<Folder Include="Pages\PostManage\" />
-		<Folder Include="Pages\OrderManage\" />
-		<Folder Include="Pages\BrandManage\" />
-		<Folder Include="Pages\AccountManage\" />
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />

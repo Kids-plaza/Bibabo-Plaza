@@ -1,0 +1,84 @@
+﻿@page
+@model BPA.FE.Pages.ProductManage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].product_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].img_url)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].created_on)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].is_deleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product[0].brand)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Product) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.product_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.img_url)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.created_on)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.is_deleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.brand.brand_address)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

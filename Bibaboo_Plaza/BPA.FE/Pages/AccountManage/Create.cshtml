@@ -1,0 +1,79 @@
+﻿@page
+@model CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Account</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Account.id" class="control-label"></label>
+                <input asp-for="Account.id" class="form-control" />
+                <span asp-validation-for="Account.id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.email" class="control-label"></label>
+                <input asp-for="Account.email" class="form-control" />
+                <span asp-validation-for="Account.email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.password" class="control-label"></label>
+                <input asp-for="Account.password" class="form-control" />
+                <span asp-validation-for="Account.password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.fullname" class="control-label"></label>
+                <input asp-for="Account.fullname" class="form-control" />
+                <span asp-validation-for="Account.fullname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.phone_number" class="control-label"></label>
+                <input asp-for="Account.phone_number" class="form-control" />
+                <span asp-validation-for="Account.phone_number" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.address" class="control-label"></label>
+                <input asp-for="Account.address" class="form-control" />
+                <span asp-validation-for="Account.address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.status" class="control-label"></label>
+                <input asp-for="Account.status" class="form-control" />
+                <span asp-validation-for="Account.status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.role" class="control-label"></label>
+                <input asp-for="Account.role" class="form-control" />
+                <span asp-validation-for="Account.role" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Account.created_on" class="control-label"></label>
+                <input asp-for="Account.created_on" class="form-control" />
+                <span asp-validation-for="Account.created_on" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Account.is_deleted" /> @Html.DisplayNameFor(model => model.Account.is_deleted)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,78 @@
+﻿@page
+@model BPA.FE.Pages.ProductManage.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Product.id" class="control-label"></label>
+                <input asp-for="Product.id" class="form-control" />
+                <span asp-validation-for="Product.id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.product_name" class="control-label"></label>
+                <input asp-for="Product.product_name" class="form-control" />
+                <span asp-validation-for="Product.product_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.price" class="control-label"></label>
+                <input asp-for="Product.price" class="form-control" />
+                <span asp-validation-for="Product.price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.description" class="control-label"></label>
+                <input asp-for="Product.description" class="form-control" />
+                <span asp-validation-for="Product.description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.img_url" class="control-label"></label>
+                <input asp-for="Product.img_url" class="form-control" />
+                <span asp-validation-for="Product.img_url" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.quantity" class="control-label"></label>
+                <input asp-for="Product.quantity" class="form-control" />
+                <span asp-validation-for="Product.quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.status" class="control-label"></label>
+                <input asp-for="Product.status" class="form-control" />
+                <span asp-validation-for="Product.status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.brand_id" class="control-label"></label>
+                <select asp-for="Product.brand_id" class ="form-control" asp-items="ViewBag.brand_id"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.created_on" class="control-label"></label>
+                <input asp-for="Product.created_on" class="form-control" />
+                <span asp-validation-for="Product.created_on" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Product.is_deleted" /> @Html.DisplayNameFor(model => model.Product.is_deleted)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

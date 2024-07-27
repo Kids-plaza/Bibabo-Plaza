@@ -1,0 +1,66 @@
+﻿@page
+@model BPA.FE.Pages.OrderDetailManage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].created_on)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].is_deleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].order)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetail[0].product)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.OrderDetail) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.created_on)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.is_deleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.order.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.product.description)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -31,6 +31,11 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+builder.WebHost.UseUrls("https://*:7019", "http://*:5037");
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -83,7 +88,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:7019/")
+        policy.WithOrigins("http://localhost:7019/", "https://26.17.99.211:3000", "https://localhost:3000")
              .AllowAnyMethod()
              .AllowAnyHeader()
              .SetIsOriginAllowedToAllowWildcardSubdomains()

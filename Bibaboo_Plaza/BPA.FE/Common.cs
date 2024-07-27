@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text;
 
-namespace PEPRN231_SU24_009909_SE161078_FE
+namespace BPA.FE
 {
     public static class Common
     {

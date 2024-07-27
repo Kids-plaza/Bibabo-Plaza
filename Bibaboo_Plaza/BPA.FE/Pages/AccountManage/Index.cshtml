@@ -1,0 +1,84 @@
+﻿@page
+@model BPA.FE.Pages.AccountManage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].fullname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].phone_number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].created_on)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account[0].is_deleted)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Account) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fullname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.phone_number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.role)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.created_on)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.is_deleted)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

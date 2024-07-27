@@ -1,0 +1,64 @@
+﻿@page
+@model BPA.FE.Pages.BrandManage.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Brand</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Brand.id" class="control-label"></label>
+                <input asp-for="Brand.id" class="form-control" />
+                <span asp-validation-for="Brand.id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand.brand_name" class="control-label"></label>
+                <input asp-for="Brand.brand_name" class="form-control" />
+                <span asp-validation-for="Brand.brand_name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand.brand_address" class="control-label"></label>
+                <input asp-for="Brand.brand_address" class="form-control" />
+                <span asp-validation-for="Brand.brand_address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand.brand_phone" class="control-label"></label>
+                <input asp-for="Brand.brand_phone" class="form-control" />
+                <span asp-validation-for="Brand.brand_phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand.description" class="control-label"></label>
+                <input asp-for="Brand.description" class="form-control" />
+                <span asp-validation-for="Brand.description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand.created_on" class="control-label"></label>
+                <input asp-for="Brand.created_on" class="form-control" />
+                <span asp-validation-for="Brand.created_on" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Brand.is_deleted" /> @Html.DisplayNameFor(model => model.Brand.is_deleted)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
